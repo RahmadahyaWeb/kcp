@@ -10,9 +10,9 @@ class MasterTokoController extends Controller
 {
     public function guard()
     {
-        if (Auth::user()->role != 'ADMIN') {
+        if (Auth::user()->role != 'ADMIN' && Auth::user()->role != 'SUPERVISOR-AREA') {
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
-        }
+        }        
     }
 
     public function index()
