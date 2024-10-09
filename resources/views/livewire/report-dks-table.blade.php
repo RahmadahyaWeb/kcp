@@ -11,6 +11,30 @@
 @endphp
 
 <div>
+    <div class="mb-3">
+        <form action="{{ route('report-dks.export') }}" method="POST">
+            @csrf
+            <div class="row g-2">
+                <div class="col-md-6">
+                    <label for="fromDate" class="form-label">Dari tanggal</label>
+                    <input id="fromDate" type="date" class="form-control" wire:model.live="fromDate" name="toDate">
+                </div>
+                <div class="col-md-6">
+                    <label for="toDate" class="form-label">Sampai tanggal</label>
+                    <input id="toDate" type="date" class="form-control" wire:model.live="toDate" name="fromDate">
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col d-flex justify-content-end">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bx bxs-download me-2"></i>
+                        Unduh
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
     <div class="table-responsive">
         <table class="table table-hover table-bordered table-sm">
             <thead>

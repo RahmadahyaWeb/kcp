@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Livewire\ReportDksTable;
+use App\Exports\DksExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ReportDKSController extends Controller
 {
@@ -15,11 +17,17 @@ class ReportDKSController extends Controller
         }
     }
 
-
     public function index()
     {
         $this->guard();
-        
+
         return view('report-dks.index');
+    }
+
+    public function export(Request $request)
+    {
+        $this->guard();
+
+        return Excel::download(new DksExport, 'dks.xlsx');
     }
 }

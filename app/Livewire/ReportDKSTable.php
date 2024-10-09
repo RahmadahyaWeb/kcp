@@ -11,6 +11,9 @@ class ReportDksTable extends Component
     use WithPagination;
     protected $paginationTheme = 'bootstrap';
 
+    public $fromDate;
+    public $toDate;
+
     public function render()
     {
         $items = DB::table('trns_dks AS in_data')

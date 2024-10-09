@@ -30,6 +30,9 @@ Route::middleware(['auth'])->group(function () {
     // REPORT DKS
     Route::get('report/dks', [ReportDKSController::class, 'index'])->name('report.dks');
 
+    // EXPORT DKS
+    Route::post('report/dks/export', [ReportDKSController::class, 'export'])->name('report-dks.export');
+
     // HELP CENTER
     Route::get('help-center', function () {
         return view('help');
