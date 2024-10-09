@@ -30,6 +30,11 @@ Route::middleware(['auth'])->group(function () {
     // REPORT DKS
     Route::get('report/dks', [ReportDKSController::class, 'index'])->name('report.dks');
 
+    // HELP CENTER
+    Route::get('help-center', function () {
+        return view('help');
+    })->name('help-center');    
+
     // MASTER TOKO
     Route::get('master-toko', [MasterTokoController::class, 'index'])->name('master-toko.index');
     Route::get('master-toko/create', [MasterTokoController::class, 'create'])->name('master-toko.create');
@@ -44,5 +49,5 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['guest'])->group(function () {
     Route::get('login', [AuthController::class, 'loginPage'])->name('login');
-    Route::post('login', [AuthController::class, 'login'])->name('login');
+    Route::post('login', [AuthController::class, 'login']);
 });
