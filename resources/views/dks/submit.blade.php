@@ -27,7 +27,8 @@
                     <div id="map"></div>
                 </div>
 
-                <form action="{{ route('dks.store', $toko->kd_toko) }}" method="POST" onclick="return validateForm(event)">
+                <form action="{{ route('dks.store', $toko->kd_toko) }}" method="POST"
+                    onsubmit="return validateForm(event)">
                     @csrf
                     <input type="hidden" name="latitude" id="latitude">
                     <input type="hidden" name="longitude" id="longitude">
@@ -138,6 +139,10 @@
             }
 
             function validateForm(event) {
+                var submitButton = document.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.innerHTML = "Loading...";
+
                 map.locate({
                     setView: true,
                     zoom: 13,
@@ -146,6 +151,7 @@
 
                 if (hasErrorAlerted) {
                     alert('Lokasi tidak ditemukan!');
+                    submitButton.disabled = false;
                     return false;
                 }
 
@@ -163,20 +169,10 @@
                 // Cegah submit form jika berada di luar radius
                 if (distance > radiusToko) {
                     alert("Anda berada di luar radius toko. Pastikan Anda berada dalam radius " + radiusToko + " meter.");
+                    submitButton.disabled = false;
                     event.preventDefault(); // Mencegah form dikirim
                     return false;
                 }
-
-                // Nonaktifkan tombol submit dan ubah teks menjadi "Processing..."
-                var submitButton = document.querySelector('button[type="submit"]');
-                submitButton.disabled = true;
-                submitButton.innerHTML = "Processing..."; // Tampilkan teks "Processing..."
-
-                // Kirim form setelah validasi berhasil
-                setTimeout(function() {
-                    // Men-submit form jika berada dalam radius
-                    event.target.submit(); // Mengirimkan form secara manual
-                }, 500); // Memberi waktu sebelum submit, sehingga tombol tidak aktif saat pengiriman
 
                 return true;
             }
