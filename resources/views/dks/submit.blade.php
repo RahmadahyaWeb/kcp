@@ -49,7 +49,7 @@
                     </div>
 
                     <div class="col-12 mb-3 d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" id="submit" class="btn btn-primary">Submit</button>
                     </div>
                 </form>
 
@@ -65,7 +65,6 @@
             var userMarker;
             var userCircle;
             var hasErrorAlerted = false;
-            var isSubmitting = false;
 
             var map = L.map('map', {
                 center: [tokoLatitude, tokoLongitude],
@@ -139,12 +138,8 @@
             }
 
             function validateForm(event) {
-                if (isSubmitting) {
-                    event.preventDefault();
-                    return false;
-                }
-
-                isSubmitting = true;
+                var submitButton = document.getElementById('submit');
+                submitButton.disabled = true;
 
                 map.locate({
                     setView: true,
@@ -154,6 +149,8 @@
 
                 if (hasErrorAlerted) {
                     alert('Lokasi tidak ditemukan!')
+                    submitButton.disabled = false;
+                    event.preventDefault();
                     return false;
                 }
 
@@ -170,11 +167,10 @@
                 document.getElementById('distance').value = distance;
 
                 if (distance <= radiusToko) {
-                    isSubmitting = false;  
                     return true;
                 } else {
                     alert("Anda berada di luar radius toko. Pastikan Anda berada dalam radius " + radiusToko + " meter.");
-                    isSubmitting = false; 
+                    submitButton.disabled = false;
                     event.preventDefault();
                     return false;
                 }
