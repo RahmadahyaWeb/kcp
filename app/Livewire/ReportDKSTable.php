@@ -13,6 +13,8 @@ class ReportDksTable extends Component
 
     public $fromDate;
     public $toDate;
+    public $user_sales;
+    public $kd_toko;
 
     public function render()
     {
@@ -25,10 +27,10 @@ class ReportDksTable extends Component
                 'in_data.tgl_kunjungan',
                 'out_data.keterangan',
                 DB::raw('CASE 
-                                WHEN out_data.waktu_kunjungan IS NOT NULL 
-                                THEN TIMESTAMPDIFF(MINUTE, in_data.waktu_kunjungan, out_data.waktu_kunjungan) 
-                                ELSE NULL 
-                            END AS lama_kunjungan')
+                            WHEN out_data.waktu_kunjungan IS NOT NULL 
+                            THEN TIMESTAMPDIFF(MINUTE, in_data.waktu_kunjungan, out_data.waktu_kunjungan) 
+                            ELSE NULL 
+                        END AS lama_kunjungan')
             )
             ->leftJoin('trns_dks AS out_data', function ($join) {
                 $join->on('in_data.user_sales', '=', 'out_data.user_sales')
@@ -41,9 +43,27 @@ class ReportDksTable extends Component
             ->when($this->fromDate && $this->toDate, function ($query) {
                 return $query->whereBetween('in_data.tgl_kunjungan', [$this->fromDate, $this->toDate]);
             })
+            ->when($this->user_sales, function ($query) {
+                return $query->where('in_data.user_sales', $this->user_sales);
+            })
+            ->when($this->kd_toko, function ($query) {
+                return $query->where('master_toko.kd_toko', $this->kd_toko);
+            })
             ->orderBy('in_data.created_at', 'desc')
             ->paginate(15);
 
-        return view('livewire.report-dks-table', compact('items'));
+        $sales = DB::table('users')
+            ->select(['*'])
+            ->where('role', 'SALESMAN')
+            ->where('status', 'active')
+            ->orderBy('name', 'asc')
+            ->get();
+
+        $dataToko = DB::table('master_toko')
+            ->select(['*'])->where('status', 'active')
+            ->orderBy('nama_toko', 'asc')
+            ->get();
+
+        return view('livewire.report-dks-table', compact('items', 'sales', 'dataToko'));
     }
 }

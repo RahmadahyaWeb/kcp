@@ -17,11 +17,41 @@
             <div class="row g-2">
                 <div class="col-md-6">
                     <label for="fromDate" class="form-label">Dari tanggal</label>
-                    <input id="fromDate" type="date" class="form-control" wire:model.live="fromDate" name="fromDate">
+                    <input id="fromDate" type="date" class="form-control @error('fromDate') is-invalid @enderror"
+                        wire:model.live="fromDate" name="fromDate">
+                    @error('fromDate')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
                 </div>
                 <div class="col-md-6">
                     <label for="toDate" class="form-label">Sampai tanggal</label>
-                    <input id="toDate" type="date" class="form-control" wire:model.live="toDate" name="toDate">
+                    <input id="toDate" type="date" class="form-control @error('toDate') is-invalid @enderror"
+                        wire:model.live="toDate" name="toDate">
+                    @error('toDate')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+                <div class="col-md-6">
+                    <label for="user_sales" class="form-label">Sales</label>
+                    <select name="user_sales" id="user_sales" class="form-select" wire:model.change="user_sales">
+                        <option value="" selected>Pilih Sales</option>
+                        @foreach ($sales as $user)
+                            <option value="{{ $user->username }}">{{ $user->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="kd_toko" class="form-label">Nama Toko</label>
+                    <select name="kd_toko" id="kd_toko" class="form-select" wire:model.change="kd_toko">
+                        <option value="" selected>Pilih Toko</option>
+                        @foreach ($dataToko as $toko)
+                            <option value="{{ $toko->kd_toko }}">{{ $toko->nama_toko }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
             <div class="row mt-3">
