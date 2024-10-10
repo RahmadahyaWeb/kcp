@@ -38,6 +38,9 @@ class ReportDksTable extends Component
             })
             ->leftJoin('master_toko', 'in_data.kd_toko', '=', 'master_toko.kd_toko')
             ->where('in_data.type', 'in')
+            ->when($this->fromDate && $this->toDate, function ($query) {
+                return $query->whereBetween('in_data.tgl_kunjungan', [$this->fromDate, $this->toDate]);
+            })
             ->orderBy('in_data.created_at', 'desc')
             ->paginate(15);
 

@@ -28,6 +28,11 @@ class ReportDKSController extends Controller
     {
         $this->guard();
 
-        return Excel::download(new DksExport, 'dks.xlsx');
+        $request->validate([
+            'fromDate'  => 'required',
+            'toDate'    => 'required',
+        ]);
+
+        return Excel::download(new DksExport($request->fromDate, $request->toDate), 'dks.xlsx');
     }
 }

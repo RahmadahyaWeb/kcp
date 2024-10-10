@@ -23,16 +23,20 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, WithEvents, WithMapping, WithColumnFormatting, WithTitle
 {
     protected $user_sales;
+    protected $fromDate;
+    protected $toDate;
 
-    public function __construct($user_sales)
+    public function __construct($user_sales, $fromDate, $toDate)
     {
         $this->user_sales = $user_sales;
+        $this->fromDate = $fromDate;
+        $this->toDate = $toDate;
     }
 
     // Start data from row 3
     public function startCell(): string
     {
-        return 'A3';  // Data will start from row 3
+        return 'A3';
     }
 
     public function registerEvents(): array
@@ -77,7 +81,7 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
                 $event->sheet->getDelegate()->getStyle($cellRange)->applyFromArray($styleArray);
 
                 // Style the second header row (row 2)
-                $sheet->getRowDimension(2)->setRowHeight(20); // Optional: Set a height for the second row
+                $sheet->getRowDimension(2)->setRowHeight(20);
 
                 // Enable auto width for all columns
                 foreach (range('A', 'H') as $columnID) {
@@ -104,7 +108,7 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
 
     public function collection()
     {
-        return DB::table('trns_dks')->select(
+        $items = DB::table('trns_dks')->select(
             'trns_dks.user_sales',
             'master_toko.nama_toko',
             'trns_dks.waktu_kunjungan AS waktu_cek_in',
@@ -126,9 +130,12 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
             ->leftJoin('master_toko', 'trns_dks.kd_toko', '=', 'master_toko.kd_toko')
             ->where('trns_dks.type', 'in')
             ->where('trns_dks.user_sales', $this->user_sales)
+            ->whereBetween('trns_dks.tgl_kunjungan', [$this->fromDate, $this->toDate])
             ->orderBy('trns_dks.created_at', 'desc')
             ->orderBy('trns_dks.user_sales', 'desc')
             ->get();
+
+        return $items;
     }
 
     public function map($row): array
@@ -142,7 +149,7 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
         if ($row->lama_kunjungan !== null) {
             $hours = floor($row->lama_kunjungan / 60);
             $minutes = $row->lama_kunjungan % 60;
-            $lama_kunjungan = sprintf('%02d:%02d:00', $hours, $minutes); // Assuming no seconds for lama_kunjungan
+            $lama_kunjungan = sprintf('%02d:%02d:00', $hours, $minutes);
 
             if ($row->lama_kunjungan < 30) {
                 $punishment = true;
@@ -163,12 +170,12 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
         return [
             $row->user_sales,
             $excelDate,
-            $row->nama_toko, // Toko
-            $waktu_cek_in,   // Check In
-            $waktu_cek_out,  // Check Out
-            $row->keterangan, // Keterangan
-            $lama_kunjungan, // Durasi Kunjungan (Lama)
-            $punishment, 
+            $row->nama_toko,
+            $waktu_cek_in,
+            $waktu_cek_out,
+            $row->keterangan,
+            $lama_kunjungan,
+            $punishment,
         ];
     }
 

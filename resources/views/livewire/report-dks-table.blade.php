@@ -17,11 +17,11 @@
             <div class="row g-2">
                 <div class="col-md-6">
                     <label for="fromDate" class="form-label">Dari tanggal</label>
-                    <input id="fromDate" type="date" class="form-control" wire:model.live="fromDate" name="toDate">
+                    <input id="fromDate" type="date" class="form-control" wire:model.live="fromDate" name="fromDate">
                 </div>
                 <div class="col-md-6">
                     <label for="toDate" class="form-label">Sampai tanggal</label>
-                    <input id="toDate" type="date" class="form-control" wire:model.live="toDate" name="fromDate">
+                    <input id="toDate" type="date" class="form-control" wire:model.live="toDate" name="toDate">
                 </div>
             </div>
             <div class="row mt-3">
