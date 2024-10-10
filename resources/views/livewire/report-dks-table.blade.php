@@ -65,7 +65,16 @@
         </form>
     </div>
 
-    <div class="table-responsive">
+    <div wire:loading.block wire:target="fromDate, toDate, user_sales, kd_toko" class="text-center">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="my-2">
+            Loading
+        </div>
+    </div>
+
+    <div wire:loading.class="d-none" class="table-responsive">
         <table class="table table-hover table-bordered table-sm">
             <thead>
                 <tr>
