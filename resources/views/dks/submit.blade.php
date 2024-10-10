@@ -178,7 +178,7 @@
                     event.target.submit(); // Mengirimkan form secara manual
                 }, 500); // Memberi waktu sebelum submit, sehingga tombol tidak aktif saat pengiriman
 
-                return false; // Menghentikan pengiriman form otomatis oleh browser
+                return true;
             }
 
 
