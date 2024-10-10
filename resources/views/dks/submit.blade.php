@@ -65,6 +65,7 @@
             var userMarker;
             var userCircle;
             var hasErrorAlerted = false;
+            var isSubmitting = false;
 
             var map = L.map('map', {
                 center: [tokoLatitude, tokoLongitude],
@@ -138,6 +139,13 @@
             }
 
             function validateForm(event) {
+                if (isSubmitting) {
+                    event.preventDefault();
+                    return false;
+                }
+
+                isSubmitting = true;
+
                 map.locate({
                     setView: true,
                     zoom: 13,
@@ -162,9 +170,11 @@
                 document.getElementById('distance').value = distance;
 
                 if (distance <= radiusToko) {
+                    isSubmitting = false;  
                     return true;
                 } else {
                     alert("Anda berada di luar radius toko. Pastikan Anda berada dalam radius " + radiusToko + " meter.");
+                    isSubmitting = false; 
                     event.preventDefault();
                     return false;
                 }
