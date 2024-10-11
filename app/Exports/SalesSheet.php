@@ -73,11 +73,11 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
                 // Style the headers (row 1)
                 $styleArray = [
                     'alignment' => [
-                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER, // Horizontal center
-                        'vertical'   => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,   // Vertical center
+                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                        'vertical'   => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
                     ],
                     'font' => [
-                        'bold' => true, // Make text bold
+                        'bold' => true,
                     ],
                 ];
 
@@ -92,6 +92,36 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
                 foreach (range('A', 'K') as $columnID) {
                     $sheet->getColumnDimension($columnID)->setAutoSize(true);
                 }
+
+                // FOOTER
+                $lastRow = count($this->collection()) + 3;
+                $footerRow = $lastRow + 1;
+                $footerRow2 = $lastRow + 2;
+
+                $sheet->setCellValue("A{$footerRow}", "Banyak Punishment");
+                $sheet->setCellValue("I{$footerRow}", "=COUNTA(I3:I{$lastRow})");
+                $sheet->setCellValue("K{$footerRow}", "=COUNTA(K3:K{$lastRow})");
+
+                $sheet->getStyle("A{$footerRow}")->applyFromArray([
+                    'alignment' => [
+                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
+                        'vertical'   => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                    ],
+                    'font' => [
+                        'bold' => true,
+                    ],
+                ]);
+
+                $sheet->getStyle("B{$footerRow}:K{$footerRow}")->applyFromArray([
+                    'font' => [
+                        'bold' => true,
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                    ],
+                ]);
+
+                $event->sheet->getDelegate()->freezePane('H1'); 
             },
         ];
     }
