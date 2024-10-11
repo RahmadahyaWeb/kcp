@@ -33,7 +33,6 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
         $this->toDate = $toDate;
     }
 
-    // Start data from row 3
     public function startCell(): string
     {
         return 'A3';
@@ -115,6 +114,7 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
     public function collection()
     {
         $items = DB::table('trns_dks')->select(
+            'trns_dks.id',
             'trns_dks.user_sales',
             'master_toko.nama_toko',
             'trns_dks.waktu_kunjungan AS waktu_cek_in',
@@ -138,7 +138,7 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
             ->where('trns_dks.type', 'in')
             ->where('trns_dks.user_sales', $this->user_sales)
             ->whereBetween('trns_dks.tgl_kunjungan', [$this->fromDate, $this->toDate])
-            ->orderBy('trns_dks.created_at', 'desc')
+            ->orderBy('trns_dks.created_at', 'asc')
             ->orderBy('trns_dks.user_sales', 'desc')
             ->get();
 
@@ -149,29 +149,71 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
     {
         $waktu_cek_in = \Carbon\Carbon::parse($row->waktu_cek_in)->format('H:i:s');
         $waktu_cek_out = \Carbon\Carbon::parse($row->waktu_cek_out)->format('H:i:s');
+        $tgl_kunjungan = Carbon::parse($row->tgl_kunjungan);
+        $excelDate = Date::dateTimeToExcel($tgl_kunjungan);
+        $keterangan = strtolower($row->keterangan);
 
         $lama_kunjungan = null;
-        $punishment = false;
+        $punishment_lama_kunjungan = 0;
+        $punishment_durasi_lama_perjalanan = 0;
+        $lama_perjalanan = '';
 
         if ($row->lama_kunjungan !== null) {
             $hours = floor($row->lama_kunjungan / 60);
             $minutes = $row->lama_kunjungan % 60;
             $lama_kunjungan = sprintf('%02d:%02d:00', $hours, $minutes);
 
+            /**
+             * PUNISHMENT DURASI LAMA KUNJUNGAN
+             * MINIMAL KUNJUNGAN ADALAH 30 MENIT
+             */
+
             if ($row->lama_kunjungan < 30) {
-                $punishment = true;
+                $punishment_lama_kunjungan = 1;
+            } else {
+                $punishment_lama_kunjungan = 0;
             }
         }
 
-        $tgl_kunjungan = Carbon::parse($row->tgl_kunjungan);
+        // LAMA DURASI PERJALANAN
+        $cekInSelanjutnya = DB::table('trns_dks')
+            ->select(['*'])
+            ->where('user_sales', $row->user_sales)
+            ->whereDate('tgl_kunjungan', $row->tgl_kunjungan)
+            ->where('type', 'in')
+            ->where('id', '>', $row->id)
+            ->first();
 
-        $excelDate = Date::dateTimeToExcel($tgl_kunjungan);
+        if ($cekInSelanjutnya) {
+            $cek_out = Carbon::parse($row->waktu_cek_out);
+            $cek_in  = Carbon::parse($cekInSelanjutnya->waktu_kunjungan);
 
-        // PUNISHMENT DURASI LAMA KUNJUNGAN
-        if ($punishment) {
-            $punishment = 1;
+            $selisih = $cek_out->diff($cek_in);
+            $lama_perjalanan = sprintf('%02d:%02d:%02d', $selisih->h, $selisih->i, $selisih->s);
         } else {
-            $punishment = '-';
+            $lama_perjalanan = '00:00:00';
+        }
+
+        /**
+         * PUNISHMENT DURASI LAMA PERJALANAN
+         * MAKSIMAL DURASI LAMA PERJALANAN ADALAH 4O MENIT
+         * ISTIRAHAT JUMAT 1 JAM 45 MENIT + 40 MENIT
+         * ISTIRAHAT SELAIN JUMAT 1 JAM 15 MENIT + 40 MENIT
+         */
+
+        // Menghitung durasi dalam menit
+        list($hours, $minutes, $seconds) = explode(':', $lama_perjalanan);
+        $lama_perjalanan_dalam_menit = ($hours * 60) + $minutes;
+
+        $max_durasi_lama_perjalanan = 40;
+        $isFriday = Carbon::parse($row->tgl_kunjungan)->isFriday();
+        $waktu_istirahat = $isFriday ? 105 : 75;
+        $max_durasi_lama_perjalanan_plus_waktu_istirahat = $waktu_istirahat + $max_durasi_lama_perjalanan;
+
+        if ($keterangan == 'ist') {
+            $punishment_durasi_lama_perjalanan = ($lama_perjalanan_dalam_menit > $max_durasi_lama_perjalanan_plus_waktu_istirahat) ? 1 : 0;
+        } else {
+            $punishment_durasi_lama_perjalanan = ($lama_perjalanan_dalam_menit > $max_durasi_lama_perjalanan) ? 1 : 0;
         }
 
         return [
@@ -183,7 +225,9 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
             $waktu_cek_out,
             $row->keterangan,
             $lama_kunjungan,
-            $punishment,
+            $punishment_lama_kunjungan,
+            $lama_perjalanan,
+            $punishment_durasi_lama_perjalanan,
         ];
     }
 
