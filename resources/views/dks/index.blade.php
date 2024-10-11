@@ -46,6 +46,11 @@
                         <p>Click "Start Scanning" to begin.</p>
                     </div>
 
+                    <div id="loading" class="text-center d-none">
+                        <div class="spinner-border" role="status"></div>
+                        <div>Loading...</div>
+                    </div>
+
                     <div id="reader" class="img-fluid mb-3"></div>
 
                     <div id="result" class="mb-3"></div>
@@ -88,6 +93,7 @@
                             const kd_toko = url.searchParams.get('kd_toko');
                             const encrypted = btoa(kd_toko);
                             const redirectUrl = `/dks-scan/${encrypted}`;
+                            document.getElementById("loading").classList.remove('d-none');
 
                             html5QrCode.stop().then(() => {
                                 window.location.href = redirectUrl;
