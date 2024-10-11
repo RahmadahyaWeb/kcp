@@ -94,6 +94,7 @@
                             const encrypted = btoa(kd_toko);
                             const redirectUrl = `/dks-scan/${encrypted}`;
                             document.getElementById("loading").classList.remove('d-none');
+                            document.getElementById("stop-button").classList.add('d-none');
 
                             html5QrCode.stop().then(() => {
                                 window.location.href = redirectUrl;
