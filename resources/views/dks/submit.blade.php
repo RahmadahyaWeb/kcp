@@ -50,7 +50,7 @@
                     </div>
 
                     <div class="col-12 mb-3 d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" id="submit" class="btn btn-primary">Submit</button>
                     </div>
                 </form>
 
@@ -139,7 +139,7 @@
             }
 
             function validateForm(event) {
-                var submitButton = document.querySelector('button[type="submit"]');
+                var submitButton = document.getElementById('submit');
                 submitButton.disabled = true;
                 submitButton.innerHTML = "Loading...";
 
@@ -166,17 +166,15 @@
                 document.getElementById('longitude').value = userLng;
                 document.getElementById('distance').value = distance;
 
-                // Cegah submit form jika berada di luar radius
                 if (distance > radiusToko) {
                     alert("Anda berada di luar radius toko. Pastikan Anda berada dalam radius " + radiusToko + " meter.");
                     submitButton.disabled = false;
-                    event.preventDefault(); // Mencegah form dikirim
+                    event.preventDefault();
                     return false;
                 }
 
                 return true;
             }
-
 
             map.on('locationfound', onLocationFound);
 

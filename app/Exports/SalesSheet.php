@@ -52,18 +52,24 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
                 $sheet->mergeCells('D1:D2');
                 $sheet->mergeCells('E1:E2');
                 $sheet->mergeCells('F1:F2');
-                $sheet->mergeCells('G1:H1');
+                $sheet->mergeCells('G1:G2');
+                $sheet->mergeCells('H1:I1');
+                $sheet->mergeCells('J1:K1');
 
                 // Set headers on row 1 and 2
                 $sheet->setCellValue('A1', "Sales");
                 $sheet->setCellValue('B1', "Tgl.Kunjungan");
-                $sheet->setCellValue('C1', "Toko");
-                $sheet->setCellValue('D1', "Check In");
-                $sheet->setCellValue('E1', "Check Out");
-                $sheet->setCellValue('F1', "Keterangan");
-                $sheet->setCellValue('G1', "Durasi Kunjungan");
-                $sheet->setCellValue('G2', "Lama");
-                $sheet->setCellValue('H2', "Punishment");
+                $sheet->setCellValue('C1', "Kode Toko");
+                $sheet->setCellValue('D1', "Toko");
+                $sheet->setCellValue('E1', "Check In");
+                $sheet->setCellValue('F1', "Check Out");
+                $sheet->setCellValue('G1', "Keterangan");
+                $sheet->setCellValue('H1', "Durasi Kunjungan");
+                $sheet->setCellValue('H2', "Lama");
+                $sheet->setCellValue('I2', "Punishment");
+                $sheet->setCellValue('J1', "Durasi Perjalanan");
+                $sheet->setCellValue('J2', "Lama");
+                $sheet->setCellValue('K2', "Punishment");
 
                 // Style the headers (row 1)
                 $styleArray = [
@@ -77,14 +83,14 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
                 ];
 
                 // Apply style to header row 1
-                $cellRange = 'A1:H2';
+                $cellRange = 'A1:K2';
                 $event->sheet->getDelegate()->getStyle($cellRange)->applyFromArray($styleArray);
 
                 // Style the second header row (row 2)
                 $sheet->getRowDimension(2)->setRowHeight(20);
 
                 // Enable auto width for all columns
-                foreach (range('A', 'H') as $columnID) {
+                foreach (range('A', 'K') as $columnID) {
                     $sheet->getColumnDimension($columnID)->setAutoSize(true);
                 }
             },
@@ -115,6 +121,7 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
             'out_data.waktu_kunjungan AS waktu_cek_out',
             'trns_dks.tgl_kunjungan',
             'out_data.keterangan',
+            'trns_dks.kd_toko',
             DB::raw('CASE 
                         WHEN out_data.waktu_kunjungan IS NOT NULL 
                         THEN TIMESTAMPDIFF(MINUTE, trns_dks.waktu_kunjungan, out_data.waktu_kunjungan) 
@@ -170,6 +177,7 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
         return [
             $row->user_sales,
             $excelDate,
+            $row->kd_toko,
             $row->nama_toko,
             $waktu_cek_in,
             $waktu_cek_out,

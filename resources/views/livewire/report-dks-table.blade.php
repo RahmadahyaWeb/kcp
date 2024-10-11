@@ -80,6 +80,7 @@
                 <tr>
                     <th>Nama</th>
                     <th>Tgl. Kunjungan</th>
+                    <th>Kode Toko</th>
                     <th>Toko</th>
                     <th>Check In</th>
                     <th>Check Out</th>
@@ -90,7 +91,7 @@
             <tbody>
                 @if ($items->isEmpty())
                     <tr>
-                        <td colspan="7" class="text-center">No data</td>
+                        <td colspan="8" class="text-center">No data</td>
                     </tr>
                 @else
                     @foreach ($items as $item)
@@ -101,6 +102,7 @@
                         <tr>
                             <td>{{ $item->user_sales }}</td>
                             <td>{{ $formattedDate }}</td>
+                            <td>{{ $item->kd_toko }}</td>
                             <td>{{ $item->nama_toko }}</td>
                             <td>{{ date('H:i:s', strtotime($item->waktu_cek_in)) }}</td>
                             <td>

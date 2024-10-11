@@ -26,6 +26,7 @@ class ReportDksTable extends Component
                 'out_data.waktu_kunjungan AS waktu_cek_out',
                 'in_data.tgl_kunjungan',
                 'out_data.keterangan',
+                'in_data.kd_toko',
                 DB::raw('CASE 
                             WHEN out_data.waktu_kunjungan IS NOT NULL 
                             THEN TIMESTAMPDIFF(MINUTE, in_data.waktu_kunjungan, out_data.waktu_kunjungan) 
