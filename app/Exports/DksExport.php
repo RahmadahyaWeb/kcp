@@ -29,6 +29,8 @@ class DksExport implements WithMultipleSheets
             $sheets[] = new SalesSheet($user_sales, $this->fromDate, $this->toDate);
         }
 
+        $sheets[] = new KunjunganSheet($sales, $this->fromDate, $this->toDate);
+
         return $sheets;
     }
 }

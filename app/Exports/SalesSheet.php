@@ -54,6 +54,7 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
                 $sheet->mergeCells('G1:G2');
                 $sheet->mergeCells('H1:I1');
                 $sheet->mergeCells('J1:K1');
+                $sheet->mergeCells('L1:M1');
 
                 // Set headers on row 1 and 2
                 $sheet->setCellValue('A1', "Sales");
@@ -69,6 +70,9 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
                 $sheet->setCellValue('J1', "Durasi Perjalanan");
                 $sheet->setCellValue('J2', "Lama");
                 $sheet->setCellValue('K2', "Punishment");
+                $sheet->setCellValue('L1', "Cek In / Cek Out");
+                $sheet->setCellValue('L2', "Kunjungan");
+                $sheet->setCellValue('M2', "Punishment");
 
                 // Style the headers (row 1)
                 $styleArray = [
@@ -82,14 +86,14 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
                 ];
 
                 // Apply style to header row 1
-                $cellRange = 'A1:K2';
+                $cellRange = 'A1:M2';
                 $event->sheet->getDelegate()->getStyle($cellRange)->applyFromArray($styleArray);
 
                 // Style the second header row (row 2)
                 $sheet->getRowDimension(2)->setRowHeight(20);
 
                 // Enable auto width for all columns
-                foreach (range('A', 'K') as $columnID) {
+                foreach (range('A', 'M') as $columnID) {
                     $sheet->getColumnDimension($columnID)->setAutoSize(true);
                 }
 
@@ -246,6 +250,13 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
             $punishment_durasi_lama_perjalanan = ($lama_perjalanan_dalam_menit > $max_durasi_lama_perjalanan) ? 1 : 0;
         }
 
+        // KUNJUNGAN
+        if (($row->lama_kunjungan % 60) > 0) {
+            $kunjungan = 1;
+        } else {
+            $kunjungan = 0;
+        }
+
         return [
             $row->user_sales,
             $excelDate,
@@ -258,6 +269,7 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
             $punishment_lama_kunjungan,
             $lama_perjalanan,
             $punishment_durasi_lama_perjalanan,
+            $kunjungan,
         ];
     }
 
