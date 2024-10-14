@@ -26,9 +26,8 @@ class AuthController extends Controller
         $user = DB::table('users')->where('username', $request->username)->first();
 
         if ($user && $this->verifyPassword($request->password, $user->password_md5)) {
-            // auth()->loginUsingId($user->id);
 
-            return $this->authenticated($request->password, $request->username);
+            return $this->authenticated($request->password, $request->username, $user->id);
         }
 
         return back()->withErrors([
@@ -36,12 +35,17 @@ class AuthController extends Controller
         ]);
     }
 
-    protected function authenticated($password, $username)
+    protected function authenticated($password, $username, $userId)
     {
         $user = User::where('username', $username)->update(['password' => Hash::make($password)]);
 
         if ($user) {
-            Auth::logoutOtherDevices($password);
+            $logout = Auth::logoutOtherDevices($password);
+
+            if ($logout) {
+                auth()->loginUsingId($userId);
+            }
+            
             return redirect()->route('dashboard');
         }
 
