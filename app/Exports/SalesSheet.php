@@ -186,7 +186,7 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
         if ($row->waktu_cek_out) {
             $waktu_cek_out = \Carbon\Carbon::parse($row->waktu_cek_out)->format('H:i:s');
         } else {
-            $waktu_cek_out = 'Belum check out';
+            $waktu_cek_out = $waktu_cek_in;
         }
 
         $tgl_kunjungan = Carbon::parse($row->tgl_kunjungan);
@@ -263,6 +263,13 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
             $kunjungan = 0;
         }
 
+        // PUNISHMENT KUNJUNGAN
+        if ($waktu_cek_in == $waktu_cek_out) {
+            $punishment_cek_in_cek_out = 1;
+        } else {
+            $punishment_cek_in_cek_out = 0;
+        }
+
         return [
             $row->user_sales,
             $excelDate,
@@ -276,6 +283,7 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
             $lama_perjalanan,
             $punishment_durasi_lama_perjalanan,
             $kunjungan,
+            $punishment_cek_in_cek_out,
         ];
     }
 
