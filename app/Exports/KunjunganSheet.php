@@ -4,9 +4,9 @@ namespace App\Exports;
 
 use Carbon\Carbon;
 use DateTime;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
@@ -30,104 +30,151 @@ class KunjunganSheet implements WithTitle, WithEvents, WithColumnFormatting
         return [
             AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet;
-
-                // Set header
-                $sheet->mergeCells('A1:A2');
-                $sheet->mergeCells('B1:B2');
-
-                $sheet->setCellValue('A1', 'Tgl. Kunjungan');
-                $sheet->setCellValue('B1', 'Hari');
-
-                // Style the headers (row 1)
-                $styleArray = [
-                    'alignment' => [
-                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                        'vertical'   => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-                    ],
-                    'font' => [
-                        'bold' => true,
-                    ],
-                ];
-
-                $dateBeginLoop = new DateTime($this->fromDate);
-                $dateEndLoop = new DateTime($this->toDate);
-
-                $dates = [];
-                while ($dateBeginLoop <= $dateEndLoop) {
-                    $dates[] = $dateBeginLoop->format('Y-m-d');
-                    $dateBeginLoop->modify('+1 day');
-                }
-
-                $daysMap = [
-                    'Mon' => 'Senin',
-                    'Tue' => 'Selasa',
-                    'Wed' => 'Rabu',
-                    'Thu' => 'Kamis',
-                    'Fri' => 'Jumat',
-                    'Sat' => 'Sabtu',
-                    'Sun' => 'Minggu'
-                ];
-
-                // Apply style to header row 1
-                $cellRange = 'A1:K2';
-                $event->sheet->getDelegate()->getStyle($cellRange)->applyFromArray($styleArray);
-
-                // Mulai dari kolom C (kolom 3)
-                $startColumn = 3; // C
-                $rowIndex = 1;
-
-                foreach ($this->sales as $user_sales) {
-                    $endColumn = $startColumn + 4; // C-G, H-L, dst.
-                    $sheet->mergeCellsByColumnAndRow($startColumn, $rowIndex, $endColumn, $rowIndex);
-                    $sheet->setCellValueByColumnAndRow($startColumn, $rowIndex, $user_sales);
-                    $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn);
-
-                    $sheet->getStyleByColumnAndRow($startColumn, $rowIndex)
-                        ->getAlignment()
-                        ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER)
-                        ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
-
-                    $sheet->getStyleByColumnAndRow($startColumn, $rowIndex)
-                        ->getFont()
-                        ->setBold(true);
-
-                    $sheet->setCellValueByColumnAndRow($startColumn, $rowIndex + 1, 'Kunjungan');
-
-                    $sheet->mergeCellsByColumnAndRow($startColumn + 1, $rowIndex + 1, $startColumn + 2, $rowIndex + 1);
-                    $sheet->setCellValueByColumnAndRow($startColumn + 1, $rowIndex + 1, 'Cek In Pertama');
-
-                    $sumIfFormula = '=SUMIF(' . $user_sales . '!$B$3:$B$6897, KUNJUNGAN!$A{row}, ' . $user_sales . '!$L$3:$L$6897)';
-                    $cekInPertama = '=IFERROR(VLOOKUP(A{row},' . $user_sales . '!$B$3:$V$8799,4,FALSE),0)';
-
-                    foreach ($dates as $index => $date) {
-                        // TGL KUNJUNGAN
-                        $tgl_kunjungan = Carbon::parse($date);
-                        $excelDate = Date::dateTimeToExcel($tgl_kunjungan);
-                        $sheet->setCellValue("A" . ($index + 3), $excelDate);
-                        $sheet->getStyle("A" . ($index + 3))->getNumberFormat()->setFormatCode('dd/mm/yyyy');
-
-                        // HARI
-                        $dayInEnglish = $tgl_kunjungan->format('D');
-                        $dayInIndonesian = $daysMap[$dayInEnglish] ?? $dayInEnglish;
-                        $sheet->setCellValue("B" . ($index + 3), $dayInIndonesian);
-
-                        // KUNJUNGAN
-                        $rowNumber = $index + 3;
-                        $sheet->setCellValue($columnLetter . $rowNumber, str_replace('{row}', $rowNumber, $sumIfFormula));
-
-                        // CEK IN PERTAMA
-                        $nextColumnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($columnLetter) + 1);
-                        $sheet->setCellValue($nextColumnLetter . $rowNumber, str_replace('{row}', $rowNumber, $cekInPertama));
-                    }
-
-                    $startColumn += 5; // C, H, M, dst.
-                }
-
-                foreach (range('A', $sheet->getHighestColumn()) as $column) {
-                    $sheet->getColumnDimension($column)->setAutoSize(true);
-                }
+                $this->setHeader($sheet);
+                $dates = $this->getDateRange();
+                $daysMap = $this->getDaysMap();
+                $this->populateData($sheet, $dates, $daysMap);
+                $this->autoSizeColumns($sheet);
             }
         ];
+    }
+
+    private function setHeader($sheet)
+    {
+        $sheet->mergeCells('A1:A2');
+        $sheet->mergeCells('B1:B2');
+        $sheet->setCellValue('A1', 'Tgl. Kunjungan');
+        $sheet->setCellValue('B1', 'Hari');
+
+        $styleArray = [
+            'alignment' => [
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+            ],
+            'font' => ['bold' => true],
+        ];
+
+        $sheet->getDelegate()->getStyle('A1:K2')->applyFromArray($styleArray);
+    }
+
+    private function getDateRange()
+    {
+        $dateBeginLoop = new DateTime($this->fromDate);
+        $dateEndLoop = new DateTime($this->toDate);
+        $dates = [];
+
+        while ($dateBeginLoop <= $dateEndLoop) {
+            $dates[] = $dateBeginLoop->format('Y-m-d');
+            $dateBeginLoop->modify('+1 day');
+        }
+
+        return $dates;
+    }
+
+    private function getDaysMap()
+    {
+        return [
+            'Mon' => 'Senin',
+            'Tue' => 'Selasa',
+            'Wed' => 'Rabu',
+            'Thu' => 'Kamis',
+            'Fri' => 'Jumat',
+            'Sat' => 'Sabtu',
+            'Sun' => 'Minggu',
+        ];
+    }
+
+    private function populateData($sheet, $dates, $daysMap)
+    {
+        $startColumn = 3; // C
+        foreach ($this->sales as $user_sales) {
+            $this->setSalesHeaders($sheet, $startColumn, $user_sales);
+            $this->fillData($sheet, $dates, $daysMap, $startColumn, $user_sales);
+            $startColumn += 5; // Move to the next sales
+        }
+    }
+
+    private function setSalesHeaders($sheet, $startColumn, $user_sales)
+    {
+        $endColumn = $startColumn + 4;
+        $sheet->mergeCellsByColumnAndRow($startColumn, 1, $endColumn, 1);
+        $sheet->setCellValueByColumnAndRow($startColumn, 1, $user_sales);
+        $this->styleSalesHeader($sheet, $startColumn);
+        $sheet->setCellValueByColumnAndRow($startColumn, 2, 'Kunjungan');
+        $sheet->mergeCellsByColumnAndRow($startColumn + 1, 2, $startColumn + 2, 2);
+        $sheet->setCellValueByColumnAndRow($startColumn + 1, 2, 'Cek In Pertama');
+    }
+
+    private function styleSalesHeader($sheet, $startColumn)
+    {
+        $sheet->getStyleByColumnAndRow($startColumn, 1)
+            ->getAlignment()
+            ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER)
+            ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+
+        $sheet->getStyleByColumnAndRow($startColumn, 1)
+            ->getFont()
+            ->setBold(true);
+    }
+
+    private function fillData($sheet, $dates, $daysMap, $startColumn, $user_sales)
+    {
+        foreach ($dates as $index => $date) {
+            $rowNumber = $index + 3; // Start from row 3
+            $this->setVisitDate($sheet, $date, $rowNumber);
+            $this->setDay($sheet, $date, $rowNumber, $daysMap);
+
+            // CARI JUMLAH KUNJUNGAN 
+            $totalKunjungan = DB::table('trns_dks')
+                ->select(['count(*) as total_kunjungan'])
+                ->where('user_sales', $user_sales)
+                ->where('tgl_kunjungan', $date)
+                ->where('type', 'in')
+                ->count();
+
+            // CEK IN PERTAMA
+            $cekInPertama = DB::table('trns_dks')
+                ->select(['*'])
+                ->where('user_sales', $user_sales)
+                ->where('tgl_kunjungan', $date)
+                ->where('type', 'in')
+                ->orderBy('waktu_kunjungan', 'asc')
+                ->first();
+
+            if ($cekInPertama == null) {
+                $cekInPertama = '00:00:00';
+            } else {
+                $cekInPertama = \Carbon\Carbon::parse($cekInPertama->waktu_kunjungan)->format('H:i:s');
+            }
+
+            // TOTAL KUNJUNGAN
+            $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn);
+            $sheet->setCellValue($columnLetter . $rowNumber, str_replace('{row}', $rowNumber, $totalKunjungan));
+
+            // CEK IN PERTAMA
+            $nextColumnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn + 1);
+            $sheet->setCellValue($nextColumnLetter . $rowNumber, str_replace('{row}', $rowNumber, $cekInPertama));
+        }
+    }
+
+    private function setVisitDate($sheet, $date, $rowNumber)
+    {
+        $excelDate = Date::dateTimeToExcel(Carbon::parse($date));
+        $sheet->setCellValue("A{$rowNumber}", $excelDate);
+        $sheet->getStyle("A{$rowNumber}")->getNumberFormat()->setFormatCode('dd/mm/yyyy');
+    }
+
+    private function setDay($sheet, $date, $rowNumber, $daysMap)
+    {
+        $dayInIndonesian = $daysMap[Carbon::parse($date)->format('D')] ?? '';
+        $sheet->setCellValue("B{$rowNumber}", $dayInIndonesian);
+    }
+
+    private function autoSizeColumns($sheet)
+    {
+        foreach (range('A', $sheet->getHighestColumn()) as $column) {
+            $sheet->getColumnDimension($column)->setAutoSize(true);
+        }
     }
 
     public function title(): string

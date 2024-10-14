@@ -33,6 +33,8 @@ class ReportDKSController extends Controller
             'toDate'    => 'required',
         ]);
 
+        ini_set('max_execution_time',3600);
+
         return Excel::download(new DksExport($request->fromDate, $request->toDate), 'dks.xlsx');
     }
 }

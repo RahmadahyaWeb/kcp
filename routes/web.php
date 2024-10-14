@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'check.online'])->group(function () {
     // DASHBOARD
     Route::get('/', function () {
         return view('welcome');
