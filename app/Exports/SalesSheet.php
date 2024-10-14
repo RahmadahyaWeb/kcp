@@ -211,6 +211,9 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
             } else {
                 $punishment_lama_kunjungan = 0;
             }
+        } else {
+            $lama_kunjungan = '00:00:00';
+            $punishment_lama_kunjungan = 1;
         }
 
         // LAMA DURASI PERJALANAN
