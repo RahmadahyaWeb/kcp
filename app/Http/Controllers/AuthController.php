@@ -38,11 +38,13 @@ class AuthController extends Controller
 
     protected function authenticated(Request $request, $username)
     {
-        User::where('username', $username)->update(['password' => Hash::make($request->password)]);
+        $user = User::where('username', $username)->update(['password' => Hash::make($request->password)]);
 
-        Auth::logoutOtherDevices($request->password);
+        if ($user) {
+            Auth::logoutOtherDevices($request->password);
 
-        return redirect()->route('dashboard');
+            return redirect()->route('dashboard');
+        }
     }
 
     private function verifyPassword($inputPassword, $hashedPassword)
