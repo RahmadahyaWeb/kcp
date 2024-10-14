@@ -40,7 +40,7 @@ class AuthController extends Controller
         $user = User::where('username', $username)->update(['password' => Hash::make($password)]);
 
         if ($user) {
-            Auth::logoutOtherDevices($password);
+            Auth::logoutOtherDevices($password);    
 
             auth()->loginUsingId($userId);
 

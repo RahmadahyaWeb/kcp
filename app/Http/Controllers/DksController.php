@@ -85,6 +85,18 @@ class DksController extends Controller
             $type = 'out';
         }
 
+        $provinsiToko = DB::table('master_toko')
+            ->select(['kd_provinsi'])
+            ->where('kd_toko', $kd_toko)
+            ->where('status', 'active')
+            ->first();
+
+        if ($provinsiToko == 2) {
+            $waktu_kunjungan = now()->subHour();
+        } else {
+            $waktu_kunjungan = now();
+        }
+
         if ($latitude && $longitude) {
             DB::table('trns_dks')
                 ->insert(
@@ -92,7 +104,7 @@ class DksController extends Controller
                         'tgl_kunjungan'     => now(),
                         'user_sales'        => $user,
                         'kd_toko'           => $kd_toko,
-                        'waktu_kunjungan'   => now(),
+                        'waktu_kunjungan'   => $waktu_kunjungan,
                         'type'              => $type,
                         'latitude'          => $latitude,
                         'longitude'         => $longitude,

@@ -152,6 +152,7 @@
                 if (hasErrorAlerted) {
                     alert('Lokasi tidak ditemukan!');
                     submitButton.disabled = false;
+                    submitButton.innerHTML = "Submit";
                     return false;
                 }
 
@@ -169,6 +170,7 @@
                 if (distance > radiusToko) {
                     alert("Anda berada di luar radius toko. Pastikan Anda berada dalam radius " + radiusToko + " meter.");
                     submitButton.disabled = false;
+                    submitButton.innerHTML = "Submit";
                     event.preventDefault();
                     return false;
                 }

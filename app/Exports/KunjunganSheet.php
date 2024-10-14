@@ -100,9 +100,14 @@ class KunjunganSheet implements WithTitle, WithEvents, WithColumnFormatting
         $sheet->mergeCellsByColumnAndRow($startColumn, 1, $endColumn, 1);
         $sheet->setCellValueByColumnAndRow($startColumn, 1, $user_sales);
         $this->styleSalesHeader($sheet, $startColumn);
+
         $sheet->setCellValueByColumnAndRow($startColumn, 2, 'Kunjungan');
+
         $sheet->mergeCellsByColumnAndRow($startColumn + 1, 2, $startColumn + 2, 2);
         $sheet->setCellValueByColumnAndRow($startColumn + 1, 2, 'Cek In Pertama');
+
+        $sheet->setCellValueByColumnAndRow($startColumn + 3, 2, 'New Header');
+        $sheet->mergeCellsByColumnAndRow($startColumn + 3, 2, $startColumn + 4, 2);
     }
 
     private function styleSalesHeader($sheet, $startColumn)
@@ -140,7 +145,7 @@ class KunjunganSheet implements WithTitle, WithEvents, WithColumnFormatting
             $cekInPertama = DB::table('trns_dks')
                 ->select(['*'])
                 ->where('user_sales', $user_sales)
-                ->where('tgl_kunjungan', $date)
+                ->where('tgl_kunjungan', '2024-10-05')
                 ->where('type', 'in')
                 ->orderBy('waktu_kunjungan', 'asc')
                 ->first();
@@ -163,6 +168,21 @@ class KunjunganSheet implements WithTitle, WithEvents, WithColumnFormatting
 
             $nextColumnLetter2 = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn + 2);
             $sheet->setCellValue($nextColumnLetter2 . $rowNumber, str_replace('{row}', $rowNumber, $punishmentCekInPertama));
+
+            // PUNISHMENT LUPA CEK IN / CEK OUT
+            $punishmentLupaCekInOut = 0;
+            $cekOut = DB::table('trns_dks')
+                ->select(['*'])
+                ->where('user_sales', $user_sales)
+                ->where('tgl_kunjungan', '2024-10-05')
+                ->where('type', 'out')
+                ->orderBy('waktu_kunjungan', 'asc')
+                ->first();
+
+            // dd([
+            //     'cekOut' => $cekOut,
+            //     'cekIn' => $cekInPertama,
+            // ]);
         }
     }
 
