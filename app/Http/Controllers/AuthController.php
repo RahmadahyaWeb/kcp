@@ -38,7 +38,7 @@ class AuthController extends Controller
 
     protected function authenticated($password, $username)
     {
-        $user = User::where('username', $username)->update(['password' => Hash::make($request->password)]);
+        $user = User::where('username', $username)->update(['password' => Hash::make($password)]);
 
         if ($user) {
             Auth::logoutOtherDevices($password);
