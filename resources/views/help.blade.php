@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Help Center')
+
 @section('content')
     <div class="row">
         <div class="col-md-6">
