@@ -196,7 +196,7 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
         $lama_kunjungan = null;
         $punishment_lama_kunjungan = 0;
         $punishment_durasi_lama_perjalanan = 0;
-        $lama_perjalanan = '';
+        $lama_perjalanan = '00:00:00';
 
         if ($row->lama_kunjungan !== null) {
             $hours = floor($row->lama_kunjungan / 60);
@@ -230,8 +230,6 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
 
             $selisih = $cek_out->diff($cek_in);
             $lama_perjalanan = sprintf('%02d:%02d:%02d', $selisih->h, $selisih->i, $selisih->s);
-        } else {
-            $lama_perjalanan = '00:00:00';
         }
 
         /**
