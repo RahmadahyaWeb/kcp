@@ -125,7 +125,7 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
                     ],
                 ]);
 
-                $event->sheet->getDelegate()->freezePane('H1'); 
+                $event->sheet->getDelegate()->freezePane('H1');
             },
         ];
     }
@@ -182,9 +182,10 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
     public function map($row): array
     {
         $waktu_cek_in = \Carbon\Carbon::parse($row->waktu_cek_in)->format('H:i:s');
-        $waktu_cek_out = \Carbon\Carbon::parse($row->waktu_cek_out)->format('H:i:s');
 
-        if (!$waktu_cek_out) {
+        if ($row->waktu_cek_out) {
+            $waktu_cek_out = \Carbon\Carbon::parse($row->waktu_cek_out)->format('H:i:s');
+        } else {
             $waktu_cek_out = 'Belum check out';
         }
 
