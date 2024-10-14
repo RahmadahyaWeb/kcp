@@ -42,6 +42,8 @@ class AuthController extends Controller
         if ($user) {
             $logout = Auth::logoutOtherDevices($password);
 
+            dd($logout);
+
             if ($logout) {
                 auth()->loginUsingId($userId);
             }
