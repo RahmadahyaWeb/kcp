@@ -183,6 +183,11 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
     {
         $waktu_cek_in = \Carbon\Carbon::parse($row->waktu_cek_in)->format('H:i:s');
         $waktu_cek_out = \Carbon\Carbon::parse($row->waktu_cek_out)->format('H:i:s');
+
+        if (!$waktu_cek_out) {
+            $waktu_cek_out = 'Belum check out';
+        }
+
         $tgl_kunjungan = Carbon::parse($row->tgl_kunjungan);
         $excelDate = Date::dateTimeToExcel($tgl_kunjungan);
         $keterangan = strtolower($row->keterangan);
