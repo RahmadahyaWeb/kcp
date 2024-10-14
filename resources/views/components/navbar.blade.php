@@ -1,5 +1,5 @@
 @php
-    $onlineUsers = \App\Models\User::where('id', Auth::id)
+    $onlineUsers = \App\Models\User::where('id', Auth::id())
         ->orderBy('last_seen', 'desc')
         ->get();
 @endphp
