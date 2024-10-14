@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -24,14 +25,24 @@ class AuthController extends Controller
 
         $user = DB::table('users')->where('username', $request->username)->first();
 
-        if ($user && $this->verifyPassword($request->password, $user->password)) {
+        if ($user && $this->verifyPassword($request->password, $user->password_md5)) {
             auth()->loginUsingId($user->id);
-            return redirect()->route('dashboard');
+
+            return $this->authenticated($request, $request->username);
         }
 
         return back()->withErrors([
             'username' => 'Username atau password salah.',
         ]);
+    }
+
+    protected function authenticated(Request $request, $username)
+    {
+        User::where('username', $username)->update(['password' => Hash::make($request->password)]);
+
+        Auth::logoutOtherDevices($request->password);
+
+        return redirect()->route('dashboard');
     }
 
     private function verifyPassword($inputPassword, $hashedPassword)

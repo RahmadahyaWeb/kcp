@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['auth', 'check.online'])->group(function () {
+Route::middleware(['auth', 'check.online', 'auth.session'])->group(function () {
     // DASHBOARD
     Route::get('/', function () {
         return view('welcome');
@@ -36,7 +36,7 @@ Route::middleware(['auth', 'check.online'])->group(function () {
     // HELP CENTER
     Route::get('help-center', function () {
         return view('help');
-    })->name('help-center');    
+    })->name('help-center');
 
     // MASTER TOKO
     Route::get('master-toko', [MasterTokoController::class, 'index'])->name('master-toko.index');
