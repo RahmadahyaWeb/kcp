@@ -41,8 +41,8 @@ class AuthController extends Controller
         $user = User::where('username', $username)->update(['password' => Hash::make($request->password)]);
 
         if ($user) {
-            Auth::logoutOtherDevices($request->password);
-
+            $userBcrypt = User::where('username', $username)->first();
+            Auth::logoutOtherDevices($userBcrypt->password);
             return redirect()->route('dashboard');
         }
     }
