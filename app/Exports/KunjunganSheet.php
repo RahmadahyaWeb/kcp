@@ -132,6 +132,10 @@ class KunjunganSheet implements WithTitle, WithEvents, WithColumnFormatting
                 ->where('type', 'in')
                 ->count();
 
+            // TOTAL KUNJUNGAN
+            $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn);
+            $sheet->setCellValue($columnLetter . $rowNumber, str_replace('{row}', $rowNumber, $totalKunjungan));
+
             // CEK IN PERTAMA
             $cekInPertama = DB::table('trns_dks')
                 ->select(['*'])
@@ -147,13 +151,18 @@ class KunjunganSheet implements WithTitle, WithEvents, WithColumnFormatting
                 $cekInPertama = \Carbon\Carbon::parse($cekInPertama->waktu_kunjungan)->format('H:i:s');
             }
 
-            // TOTAL KUNJUNGAN
-            $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn);
-            $sheet->setCellValue($columnLetter . $rowNumber, str_replace('{row}', $rowNumber, $totalKunjungan));
-
-            // CEK IN PERTAMA
             $nextColumnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn + 1);
             $sheet->setCellValue($nextColumnLetter . $rowNumber, str_replace('{row}', $rowNumber, $cekInPertama));
+
+            // PUNISHMENT > 9.30
+            if ($cekInPertama > '09:30:00') {
+                $punishmentCekInPertama = 1;
+            } else {
+                $punishmentCekInPertama = 0;
+            }
+
+            $nextColumnLetter2 = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn + 2);
+            $sheet->setCellValue($nextColumnLetter2 . $rowNumber, str_replace('{row}', $rowNumber, $punishmentCekInPertama));
         }
     }
 
