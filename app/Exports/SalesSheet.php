@@ -259,7 +259,6 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
         }
 
         if ($lama_perjalanan_dalam_menit == 0) {
-            $punishment_durasi_lama_perjalanan = 1;
             $lama_perjalanan = '00:00:00';
         } 
 
