@@ -195,8 +195,6 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
 
         $lama_kunjungan = null;
         $punishment_lama_kunjungan = 0;
-        $punishment_durasi_lama_perjalanan = 0;
-        $lama_perjalanan = '00:00:00';
 
         if ($row->lama_kunjungan !== null) {
             $hours = floor($row->lama_kunjungan / 60);
@@ -216,6 +214,9 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
         }
 
         // LAMA DURASI PERJALANAN
+        $punishment_durasi_lama_perjalanan = 0;
+        $lama_perjalanan = '00:00:00';
+
         $cekInSelanjutnya = DB::table('trns_dks')
             ->select(['*'])
             ->where('user_sales', $row->user_sales)
@@ -253,6 +254,11 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
         } else {
             $punishment_durasi_lama_perjalanan = ($lama_perjalanan_dalam_menit > $max_durasi_lama_perjalanan) ? 1 : 0;
         }
+
+        if ($lama_perjalanan_dalam_menit == 0) {
+            $punishment_durasi_lama_perjalanan = 1;
+            $lama_perjalanan = '00:00:00';
+        } 
 
         // KUNJUNGAN
         if (($row->lama_kunjungan % 60) > 0) {
