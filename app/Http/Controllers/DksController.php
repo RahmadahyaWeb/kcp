@@ -92,7 +92,7 @@ class DksController extends Controller
             ->first();
 
         if ($provinsiToko->kd_provinsi == 2) {
-            $waktu_kunjungan = now()->subHour();
+            $waktu_kunjungan = now()->modify('-1 hour');
         } else {
             $waktu_kunjungan = now();
         }
