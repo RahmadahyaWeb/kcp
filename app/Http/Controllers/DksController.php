@@ -91,7 +91,7 @@ class DksController extends Controller
             ->where('status', 'active')
             ->first();
 
-        if ($provinsiToko == 2) {
+        if ($provinsiToko->kd_provinsi == 2) {
             $waktu_kunjungan = now()->subHour();
         } else {
             $waktu_kunjungan = now();
