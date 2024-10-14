@@ -1,5 +1,7 @@
 @php
-    $onlineUsers = \App\Models\User::orderBy('last_seen', 'desc')->get();
+    $onlineUsers = \App\Models\User::where('id', Auth::id)
+        ->orderBy('last_seen', 'desc')
+        ->get();
 @endphp
 
 <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
