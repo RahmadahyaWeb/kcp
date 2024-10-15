@@ -12,7 +12,7 @@ class MasterTokoController extends Controller
     {
         if (Auth::user()->role != 'ADMIN') {
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
-        }        
+        }
     }
 
     public function index()
@@ -38,24 +38,41 @@ class MasterTokoController extends Controller
         $this->guard();
 
         $validated = $request->validate([
-            'kd_toko'   => 'required|unique:master_toko',
-            'nama_toko' => 'required',
-            'alamat'    => 'required',
-            'status'    => 'required',
-            'latitude'  => 'required',
-            'longitude' => 'required'
+            'kd_toko'       => 'required|unique:master_toko',
+            'nama_toko'     => 'required',
+            'alamat'        => 'required',
+            'status'        => 'required',
+            'latitude'      => 'required',
+            'longitude'     => 'required',
+            'kd_provinsi'   => 'required',
+            'category'      => 'required',
         ], [
-            'kd_toko.required'   => 'Kode toko harus diisi.',
-            'kd_toko.unique'     => 'Kode toko sudah ada.',
-            'nama_toko.required' => 'Nama toko harus diisi.',
-            'alamat.required'    => 'Alamat harus diisi.',
-            'status.required'    => 'Status harus diisi.',
-            'latitude.required'  => 'Latitude harus diisi.',
-            'longitude.required' => 'Longitude harus diisi.'
+            'kd_toko.required'      => 'Kode toko harus diisi.',
+            'kd_toko.unique'        => 'Kode toko sudah ada.',
+            'nama_toko.required'    => 'Nama toko harus diisi.',
+            'alamat.required'       => 'Alamat harus diisi.',
+            'status.required'       => 'Status harus diisi.',
+            'latitude.required'     => 'Latitude harus diisi.',
+            'longitude.required'    => 'Longitude harus diisi.',
+            'kd_provinsi.required'  => 'kd_provinsi harus diisi.',
+            'category.required'     => 'category harus diisi.',
         ]);
 
         try {
-            DB::table('master_toko')->insert($validated);
+            DB::table('master_toko')->insert([
+                'kd_toko'       => $request->kd_toko,
+                'nama_toko'     => $request->nama_toko,
+                'alamat'        => $request->alamat,
+                'status'        => $request->status,
+                'latitude'      => $request->latitude,
+                'longitude'     => $request->longitude,
+                'kd_provinsi'   => $request->kd_provinsi,
+                'category'      => $request->category,
+                'created_at'    => now(),
+                'updated_at'    => now(),
+                'created_by'    => Auth::user()->username,
+                'updated_by'    => Auth::user()->username
+            ]);
 
             return redirect()->route('master-toko.index')->with('success', 'Data Toko berhasil ditambahkan.');
         } catch (\Exception $e) {
@@ -80,30 +97,39 @@ class MasterTokoController extends Controller
             ->first();
 
         $request->validate([
-            'kd_toko'   => 'required|unique:master_toko,kd_toko,' . $item->id,
-            'nama_toko' => 'required',
-            'alamat'    => 'required',
-            'status'    => 'required',
-            'latitude'  => 'required',
-            'longitude' => 'required'
+            'kd_toko'       => 'required|unique:master_toko,kd_toko,' . $item->id,
+            'nama_toko'     => 'required',
+            'alamat'        => 'required',
+            'status'        => 'required',
+            'latitude'      => 'required',
+            'longitude'     => 'required',
+            'kd_provinsi'   => 'required',
+            'category'      => 'required',
         ], [
-            'kd_toko.required'   => 'Kode toko harus diisi.',
-            'kd_toko.unique'     => 'Kode toko sudah ada.',
-            'nama_toko.required' => 'Nama toko harus diisi.',
-            'alamat.required'    => 'Alamat harus diisi.',
-            'status.required'    => 'Status harus diisi.',
-            'latitude.required'  => 'Latitude harus diisi.',
-            'longitude.required' => 'Longitude harus diisi.'
+            'kd_toko.required'      => 'Kode toko harus diisi.',
+            'kd_toko.unique'        => 'Kode toko sudah ada.',
+            'nama_toko.required'    => 'Nama toko harus diisi.',
+            'alamat.required'       => 'Alamat harus diisi.',
+            'status.required'       => 'Status harus diisi.',
+            'latitude.required'     => 'Latitude harus diisi.',
+            'longitude.required'    => 'Longitude harus diisi.',
+            'kd_provinsi.required'  => 'kd_provinsi harus diisi.',
+            'category.required'     => 'category harus diisi.',
         ]);
 
         try {
             DB::table('master_toko')->where('kd_toko', $kd_toko)->update([
-                'kd_toko'   => $request->kd_toko,
-                'nama_toko' => $request->nama_toko,
-                'alamat'    => $request->alamat,
-                'status'    => $request->status,
-                'latitude'  => $request->latitude,
-                'longitude' => $request->longitude,
+                'kd_toko'       => $request->kd_toko,
+                'nama_toko'     => $request->nama_toko,
+                'alamat'        => $request->alamat,
+                'status'        => $request->status,
+                'latitude'      => $request->latitude,
+                'longitude'     => $request->longitude,
+                'kd_provinsi'   => $request->kd_provinsi,
+                'category'      => $request->category,
+                'created_at'    => now(),
+                'updated_at'    => now(),
+                'updated_by'    => Auth::user()->username
             ]);
 
             return redirect()->route('master-toko.index')->with('success', 'Data Toko berhasil diperbarui.');

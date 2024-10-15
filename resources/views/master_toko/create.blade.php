@@ -55,6 +55,21 @@
                             </div>
 
                             <div class="col-12 mb-3">
+                                <label for="kd_provinsi" class="form-label">Provinsi</label>
+                                <select class="form-select @error('kd_provinsi') is-invalid @enderror" name="kd_provinsi"
+                                    id="kd_provinsi">
+                                    <option value="1" @selected(old('1') == '1')>Kalimantan Selatan</option>
+                                    <option value="2" @selected(old('2') == '2')>Kalimantan Tengah</option>
+                                </select>
+
+                                @error('kd_provinsi')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+
+                            <div class="col-12 mb-3">
                                 <label for="status" class="form-label">Status</label>
                                 <select class="form-select @error('status') is-invalid @enderror" name="status"
                                     id="status">
@@ -87,6 +102,21 @@
                                     id="longitude" name="longitude" placeholder="Longitude" value="{{ old('longitude') }}">
 
                                 @error('longitude')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+
+                            <div class="col-12 mb-3">
+                                <label for="category" class="form-label">Category</label>
+                                <select class="form-select @error('category') is-invalid @enderror" name="category"
+                                    id="category">
+                                    <option value="2W" @selected(old('2W') == '2W')>2W</option>
+                                    <option value="4W" @selected(old('4W') == '4W')>4W</option>
+                                </select>
+
+                                @error('category')
                                     <div class="invalid-feedback">
                                         {{ $message }}
                                     </div>

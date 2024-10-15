@@ -87,7 +87,7 @@ class DksController extends Controller
         }
 
         $provinsiToko = DB::table('master_toko')
-            ->select(['kd_provinsi'])
+            ->select(['*'])
             ->where('kd_toko', $kd_toko)
             ->where('status', 'active')
             ->first();
