@@ -13,19 +13,6 @@
     </div>
 
     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
-        <!-- Search -->
-        <!-- <div class="navbar-nav align-items-center">
-            <div class="nav-item d-flex align-items-center">
-                <i class="bx bx-search bx-md"></i>
-                <input
-                    type="text"
-                    class="form-control border-0 shadow-none ps-1 ps-sm-2"
-                    placeholder="Search..."
-                    aria-label="Search..." />
-            </div>
-        </div> -->
-        <!-- /Search -->
-
         <ul class="navbar-nav flex-row align-items-center ms-auto">
             {{-- USER ONLINE --}}
             <li class="nav-item navbar-dropdown dropdown-user dropdown me-5">
@@ -34,7 +21,7 @@
                         <i class='bx bx-signal-5' style='font-size: 40px;'></i>
                     </div>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end">
+                <ul class="dropdown-menu dropdown-menu-end" style="max-height: 300px; overflow-y: auto;">
                     <li>
                         <h6 class="dropdown-header">Users Online</h6>
                     </li>
@@ -60,7 +47,6 @@
                     @endforeach
                 </ul>
             </li>
-
             {{-- USER ONLINE --}}
 
             <!-- User -->
