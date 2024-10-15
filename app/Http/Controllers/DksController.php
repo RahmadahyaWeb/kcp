@@ -50,6 +50,7 @@ class DksController extends Controller
          * VALIDASI JIKA BELUM CHECKIN DI TOKO TERSEBUT HARI INI MAKA TYPE = IN, 
          * VALIDASI JIKA SUDAH CHECKIN DI TOKO TERSEBUT HARI INI MAKA TYPE = OUT
          * VALIDASI JIKA KETERANGAN = 'IST/ist' MAKA TYPE = OUT
+         * VALIDASI TOKO YANG AKTIF
          */
 
         // DATA USER
@@ -90,6 +91,10 @@ class DksController extends Controller
             ->where('kd_toko', $kd_toko)
             ->where('status', 'active')
             ->first();
+
+        if ($provinsiToko == null) {
+            return back()->with('error', "Toko dengan kode $kd_toko tidak aktif!"); 
+        }
 
         if ($provinsiToko->kd_provinsi == 2) {
             $waktu_kunjungan = now()->modify('-1 hour');

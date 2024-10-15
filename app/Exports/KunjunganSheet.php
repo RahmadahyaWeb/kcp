@@ -86,11 +86,11 @@ class KunjunganSheet implements WithTitle, WithEvents, WithColumnFormatting
 
     private function populateData($sheet, $dates, $daysMap)
     {
-        $startColumn = 3; // C
+        $startColumn = 3;
         foreach ($this->sales as $user_sales) {
             $this->setSalesHeaders($sheet, $startColumn, $user_sales);
             $this->fillData($sheet, $dates, $daysMap, $startColumn, $user_sales);
-            $startColumn += 5; // Move to the next sales
+            $startColumn += 5;
         }
     }
 
@@ -106,7 +106,7 @@ class KunjunganSheet implements WithTitle, WithEvents, WithColumnFormatting
         $sheet->mergeCellsByColumnAndRow($startColumn + 1, 2, $startColumn + 2, 2);
         $sheet->setCellValueByColumnAndRow($startColumn + 1, 2, 'Cek In Pertama');
 
-        $sheet->setCellValueByColumnAndRow($startColumn + 3, 2, 'New Header');
+        $sheet->setCellValueByColumnAndRow($startColumn + 3, 2, 'Punishment');
         $sheet->mergeCellsByColumnAndRow($startColumn + 3, 2, $startColumn + 4, 2);
     }
 
@@ -145,7 +145,7 @@ class KunjunganSheet implements WithTitle, WithEvents, WithColumnFormatting
             $cekInPertama = DB::table('trns_dks')
                 ->select(['*'])
                 ->where('user_sales', $user_sales)
-                ->where('tgl_kunjungan', '2024-10-05')
+                ->where('tgl_kunjungan', $date)
                 ->where('type', 'in')
                 ->orderBy('waktu_kunjungan', 'asc')
                 ->first();
@@ -174,15 +174,19 @@ class KunjunganSheet implements WithTitle, WithEvents, WithColumnFormatting
             $cekOut = DB::table('trns_dks')
                 ->select(['*'])
                 ->where('user_sales', $user_sales)
-                ->where('tgl_kunjungan', '2024-10-05')
+                ->where('tgl_kunjungan', $date)
                 ->where('type', 'out')
                 ->orderBy('waktu_kunjungan', 'asc')
                 ->first();
 
-            // dd([
-            //     'cekOut' => $cekOut,
-            //     'cekIn' => $cekInPertama,
-            // ]);
+            if ($cekInPertama == '00:00:00') {
+                $punishmentLupaCekInOut = 0;
+            } else if($cekOut == null) {
+                $punishmentLupaCekInOut = 1;
+            } 
+
+            $nextColumnLetter3 = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn + 3);
+            $sheet->setCellValue($nextColumnLetter3 . $rowNumber, str_replace('{row}', $rowNumber, $punishmentLupaCekInOut));
         }
     }
 

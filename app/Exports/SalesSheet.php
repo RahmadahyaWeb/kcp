@@ -44,7 +44,7 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
             AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet;
 
-                // Merge cells for headers
+                // SET HEADER MERGE CELL
                 $sheet->mergeCells('A1:A2');
                 $sheet->mergeCells('B1:B2');
                 $sheet->mergeCells('C1:C2');
@@ -56,7 +56,7 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
                 $sheet->mergeCells('J1:K1');
                 $sheet->mergeCells('L1:M1');
 
-                // Set headers on row 1 and 2
+                // SET HEADER TITLE
                 $sheet->setCellValue('A1', "Sales");
                 $sheet->setCellValue('B1', "Tgl.Kunjungan");
                 $sheet->setCellValue('C1', "Kode Toko");
@@ -74,7 +74,7 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
                 $sheet->setCellValue('L2', "Kunjungan");
                 $sheet->setCellValue('M2', "Punishment");
 
-                // Style the headers (row 1)
+                // HEADER STYLE
                 $styleArray = [
                     'alignment' => [
                         'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
@@ -85,11 +85,9 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
                     ],
                 ];
 
-                // Apply style to header row 1
                 $cellRange = 'A1:M2';
                 $event->sheet->getDelegate()->getStyle($cellRange)->applyFromArray($styleArray);
 
-                // Style the second header row (row 2)
                 $sheet->getRowDimension(2)->setRowHeight(20);
 
                 // Enable auto width for all columns
@@ -125,6 +123,7 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
                     ],
                 ]);
 
+                // FREEZE PANE
                 $event->sheet->getDelegate()->freezePane('H1');
             },
         ];
@@ -134,14 +133,14 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
     public function headings(): array
     {
         return [
-            "", // Row 1: Empty cell
-            "", // Row 1: Empty cell
-            "", // Row 1: Empty cell
-            "", // Row 1: Empty cell
-            "", // Row 1: Empty cell
-            "", // Row 1: Empty cell
-            "", // Row 2: Durasi Kunjungan
-            "", // Row 2: Punishment (empty for now)
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
         ];
     }
 
@@ -181,18 +180,24 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
 
     public function map($row): array
     {
+        // WAKTU CEK IN
         $waktu_cek_in = \Carbon\Carbon::parse($row->waktu_cek_in)->format('H:i:s');
 
+        // WAKTU CEK OUT
         if ($row->waktu_cek_out) {
             $waktu_cek_out = \Carbon\Carbon::parse($row->waktu_cek_out)->format('H:i:s');
         } else {
             $waktu_cek_out = $waktu_cek_in;
         }
 
+        // TGL KUNJUNGAN
         $tgl_kunjungan = Carbon::parse($row->tgl_kunjungan);
         $excelDate = Date::dateTimeToExcel($tgl_kunjungan);
+
+        // KETERANGAN
         $keterangan = strtolower($row->keterangan);
 
+        // LAMA KUNJUNGAN
         $lama_kunjungan = null;
         $punishment_lama_kunjungan = 0;
 
@@ -243,7 +248,6 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
          * ISTIRAHAT SELAIN JUMAT 1 JAM 15 MENIT + 40 MENIT
          */
 
-        // Menghitung durasi dalam menit
         list($hours, $minutes, $seconds) = explode(':', $lama_perjalanan);
         $lama_perjalanan_dalam_menit = ($hours * 60) + $minutes;
 
@@ -260,7 +264,7 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
 
         if ($lama_perjalanan_dalam_menit == 0) {
             $lama_perjalanan = '00:00:00';
-        } 
+        }
 
         // KUNJUNGAN
         if (($row->lama_kunjungan % 60) > 0) {
