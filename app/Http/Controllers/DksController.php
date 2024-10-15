@@ -10,15 +10,16 @@ class DksController extends Controller
 {
     public function guard()
     {
-        // ADMIN,SALESMAN,HEAD-MARKETING,SUPERVISOR-AREA
-
-        if (Auth::user()->role != 'ADMIN' || Auth::user()->role != 'SALESMAN' || Auth::user()->role != 'HEAD-MARKETING') {
+        // ADMIN,SALESMAN,HEAD-MARKETING
+        if (Auth::user()->role != 'ADMIN' || Auth::user()->role != 'SALESMAN') {
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
     }
 
     public function index($kd_toko = null)
     {
+        $this->guard();
+
         if ($kd_toko) {
             $kd_toko = base64_decode($kd_toko);
 
@@ -44,6 +45,8 @@ class DksController extends Controller
 
     public function store(Request $request, $kd_toko)
     {
+        $this->guard();
+
         /**
          * VALIDASI LATITUDE DAN LONGITUDE
          * VALIDASI MAX 2X SCAN PER TOKO DALAM SATU HARI
