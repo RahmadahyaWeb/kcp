@@ -11,9 +11,9 @@ class DksController extends Controller
     public function guard()
     {
         // ADMIN,SALESMAN,HEAD-MARKETING
-        if (Auth::user()->role != 'ADMIN' || Auth::user()->role != 'SALESMAN') {
+        if (Auth::user()->role != 'ADMIN' && Auth::user()->role != 'SALESMAN') {
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
-        }
+        }        
     }
 
     public function index($kd_toko = null)
