@@ -12,7 +12,7 @@ class DksController extends Controller
     {
         // ADMIN,SALESMAN,HEAD-MARKETING,SUPERVISOR-AREA
 
-        if (Auth::user()->role != 'ADMIN' || Auth::user()->role != 'SALESMAN' || Auth::user()->role != 'HEAD-MARKETING' || Auth::user()->role != 'SUPERVISOR-AREA') {
+        if (Auth::user()->role != 'ADMIN' || Auth::user()->role != 'SALESMAN' || Auth::user()->role != 'HEAD-MARKETING') {
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
     }
