@@ -13,7 +13,7 @@ class DksController extends Controller
         // ADMIN,SALESMAN,HEAD-MARKETING
         if (Auth::user()->role != 'ADMIN' && Auth::user()->role != 'SALESMAN') {
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
-        }        
+        }
     }
 
     public function index($kd_toko = null)
@@ -54,6 +54,7 @@ class DksController extends Controller
          * VALIDASI JIKA SUDAH CHECKIN DI TOKO TERSEBUT HARI INI MAKA TYPE = OUT
          * VALIDASI JIKA KETERANGAN = 'IST/ist' MAKA TYPE = OUT
          * VALIDASI TOKO YANG AKTIF
+         * VALIDASI CEK OUT 
          */
 
         // DATA USER
@@ -96,13 +97,25 @@ class DksController extends Controller
             ->first();
 
         if ($provinsiToko == null) {
-            return back()->with('error', "Toko dengan kode $kd_toko tidak aktif!"); 
+            return back()->with('error', "Toko dengan kode $kd_toko tidak aktif!");
         }
 
         if ($provinsiToko->kd_provinsi == 2) {
             $waktu_kunjungan = now()->modify('-1 hour');
         } else {
             $waktu_kunjungan = now();
+        }
+
+        // VALIDASI BLOCK CHECK OUT
+        $validasiCekOut = DB::table('trns_dks')
+            ->select(['*'])
+            ->where('user_sales', $user)
+            ->where('kd_toko', '!=', $kd_toko)
+            ->where('type', 'in')
+            ->whereDate('tgl_kunjungan', '=', now()->toDateString())->count();
+
+        if ($validasiCekOut > 0) {
+            return back()->with('error', "Tidak dapat melakukan check out di toko sebelumnya!");
         }
 
         if ($latitude && $longitude) {
