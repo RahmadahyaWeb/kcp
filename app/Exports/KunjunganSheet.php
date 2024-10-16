@@ -54,7 +54,7 @@ class KunjunganSheet implements WithTitle, WithEvents, WithColumnFormatting
             'font' => ['bold' => true],
         ];
 
-        $sheet->getDelegate()->getStyle('A1:K2')->applyFromArray($styleArray);
+        // $sheet->getDelegate()->getStyle('A1:K2')->applyFromArray($styleArray);
     }
 
     private function getDateRange()
@@ -214,8 +214,6 @@ class KunjunganSheet implements WithTitle, WithEvents, WithColumnFormatting
             $sheet->getColumnDimension($columnLetter)->setAutoSize(true);
         }
     }
-
-
 
     public function title(): string
     {
