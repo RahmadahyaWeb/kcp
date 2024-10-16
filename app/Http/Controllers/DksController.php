@@ -107,16 +107,16 @@ class DksController extends Controller
         }
 
         // VALIDASI BLOCK CHECK OUT
-        $validasiCekOut = DB::table('trns_dks')
-            ->select(['*'])
-            ->where('user_sales', $user)
-            ->where('kd_toko', '!=', $kd_toko)
-            ->where('type', 'in')
-            ->whereDate('tgl_kunjungan', '=', now()->toDateString())->count();
+        // $validasiCekOut = DB::table('trns_dks')
+        //     ->select(['*'])
+        //     ->where('user_sales', $user)
+        //     ->where('kd_toko', '!=', $kd_toko)
+        //     ->where('type', 'in')
+        //     ->whereDate('tgl_kunjungan', '=', now()->toDateString())->count();
 
-        if ($validasiCekOut > 0) {
-            return back()->with('error', "Tidak dapat melakukan check out di toko sebelumnya!");
-        }
+        // if ($validasiCekOut > 0) {
+        //     return back()->with('error', "Tidak dapat melakukan check out di toko sebelumnya!");
+        // }
 
         if ($latitude && $longitude) {
             DB::table('trns_dks')
