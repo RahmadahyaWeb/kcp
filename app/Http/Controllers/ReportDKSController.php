@@ -28,6 +28,8 @@ class ReportDKSController extends Controller
     {
         $this->guard();
 
+        return 'Sedang Perbaikan';
+
         $request->validate([
             'fromDate'  => 'required',
             'toDate'    => 'required',
