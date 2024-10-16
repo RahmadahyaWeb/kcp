@@ -205,11 +205,16 @@ class KunjunganSheet implements WithTitle, WithEvents, WithColumnFormatting
 
     private function autoSizeColumns($sheet)
     {
-        $highestColumn = $sheet->getHighestColumn(); 
-        foreach (range('A', $highestColumn) as $column) {
-            $sheet->getColumnDimension($column)->setAutoSize(true);
+        $highestColumn = $sheet->getHighestColumn(); // Mendapatkan kolom tertinggi
+        $highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn); // Mengonversi huruf kolom menjadi indeks
+
+        // Mengatur ukuran kolom secara otomatis dari kolom 1 hingga kolom tertinggi
+        foreach (range(1, $highestColumnIndex) as $columnIndex) {
+            $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex); // Mengonversi indeks kembali ke huruf kolom
+            $sheet->getColumnDimension($columnLetter)->setAutoSize(true);
         }
     }
+
 
 
     public function title(): string
