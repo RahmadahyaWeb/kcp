@@ -181,9 +181,9 @@ class KunjunganSheet implements WithTitle, WithEvents, WithColumnFormatting
 
             if ($cekInPertama == '00:00:00') {
                 $punishmentLupaCekInOut = 0;
-            } else if($cekOut == null) {
+            } else if ($cekOut == null) {
                 $punishmentLupaCekInOut = 1;
-            } 
+            }
 
             $nextColumnLetter3 = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn + 3);
             $sheet->setCellValue($nextColumnLetter3 . $rowNumber, str_replace('{row}', $rowNumber, $punishmentLupaCekInOut));
@@ -205,10 +205,12 @@ class KunjunganSheet implements WithTitle, WithEvents, WithColumnFormatting
 
     private function autoSizeColumns($sheet)
     {
-        foreach (range('A', $sheet->getHighestColumn()) as $column) {
+        $highestColumn = $sheet->getHighestColumn(); 
+        foreach (range('A', $highestColumn) as $column) {
             $sheet->getColumnDimension($column)->setAutoSize(true);
         }
     }
+
 
     public function title(): string
     {
