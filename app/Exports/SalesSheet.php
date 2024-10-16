@@ -280,6 +280,23 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
             $punishment_cek_in_cek_out = 0;
         }
 
+        // UNTUK ABSEN SALESMAN
+
+        $tokoAbsen = [
+            '6B',
+            '6C',
+            '6D',
+            '6F',
+            '6H',
+        ];
+
+        if (in_array($row->kd_toko, $tokoAbsen)) {
+            $punishment_lama_kunjungan = 0;
+            $punishment_durasi_lama_perjalanan = 0;
+            $punishment_cek_in_cek_out = 0;
+            $kunjungan = 'A';
+        }
+
         return [
             $row->user_sales,
             $excelDate,
