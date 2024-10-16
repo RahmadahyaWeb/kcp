@@ -106,17 +106,25 @@ class DksController extends Controller
             $waktu_kunjungan = now();
         }
 
-        // VALIDASI BLOCK CHECK OUT
-        // $validasiCekOut = DB::table('trns_dks')
-        //     ->select(['*'])
-        //     ->where('user_sales', $user)
-        //     ->where('kd_toko', '!=', $kd_toko)
-        //     ->where('type', 'in')
-        //     ->whereDate('tgl_kunjungan', '=', now()->toDateString())->count();
+        // Ambil semua cek in aktif untuk user pada hari ini
+        $cekInAktif = DB::table('trns_dks as in_data')
+            ->select(['in_data.kd_toko'])
+            ->where('in_data.user_sales', $user)
+            ->where('in_data.type', 'in')
+            ->whereDate('in_data.tgl_kunjungan', '=', now()->toDateString())
+            ->leftJoin('trns_dks as out_data', function ($join) {
+                $join->on('in_data.user_sales', '=', 'out_data.user_sales')
+                    ->whereColumn('out_data.kd_toko', 'in_data.kd_toko')
+                    ->where('out_data.type', '=', 'out')
+                    ->where('out_data.created_at', '>', 'in_data.created_at'); 
+            })
+            ->whereNull('out_data.id') 
+            ->pluck('in_data.kd_toko');
 
-        // if ($validasiCekOut > 0) {
-        //     return back()->with('error', "Tidak dapat melakukan check out di toko sebelumnya!");
-        // }
+        // Jika yang di cek out adalah toko lain
+        if ($kd_toko != $cekInAktif->last()) {
+            return redirect()->back()->with('error', 'Tidak dapat melakukan check out di toko sebelumnya!');
+        }
 
         if ($latitude && $longitude) {
             DB::table('trns_dks')
