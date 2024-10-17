@@ -136,7 +136,7 @@
         </table>
     </div>
 
-    <div class="mt-6">
+    <div wire:loading.class="d-none" class="mt-6">
         {{ $items->links() }}
     </div>
 </div>
