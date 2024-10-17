@@ -8,6 +8,8 @@
         'Friday' => 'Jumat',
         'Saturday' => 'Sabtu',
     ];
+
+    $tokoAbsen = ['6B', '6C', '6D', '6F', '6H'];
 @endphp
 
 <div>
@@ -119,7 +121,11 @@
                                     -
                                 @endif
                             </td>
-                            <td>{{ $item->keterangan }}</td>
+                            @if (in_array($item->kd_toko, $tokoAbsen))
+                                <td>Absen Toko</td>
+                            @else
+                                <td>{{ $item->keterangan }}</td>
+                            @endif
                         </tr>
                     @endforeach
                 @endif
