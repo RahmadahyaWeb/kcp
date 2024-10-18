@@ -40,21 +40,27 @@
                             <td>{{ $formattedDate }}</td>
                             <td>{{ $item->nama_toko }}</td>
                             <td>{{ date('H:i:s', strtotime($item->waktu_cek_in)) }}</td>
-                            <td>
-                                @if ($item->waktu_cek_out)
-                                    {{ date('H:i:s', strtotime($item->waktu_cek_out)) }}
-                                @else
-                                    Belum check out
-                                @endif
-                            </td>
-                            <td>
-                                @if ($item->lama_kunjungan != null)
-                                    {{ $item->lama_kunjungan }} menit
-                                @else
-                                    -
-                                @endif
-                            </td>
-                            <td>{{ $item->keterangan }}</td>
+                            @if (in_array($item->kd_toko, $tokoAbsen))
+                                <td>-</td>
+                                <td>-</td>
+                                <td>Absen Toko</td>
+                            @else
+                                <td>
+                                    @if ($item->waktu_cek_out)
+                                        {{ date('H:i:s', strtotime($item->waktu_cek_out)) }}
+                                    @else
+                                        Belum check out
+                                    @endif
+                                </td>
+                                <td>
+                                    @if ($item->lama_kunjungan != null)
+                                        {{ $item->lama_kunjungan }} menit
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                                <td>{{ $item->keterangan }}</td>
+                            @endif
                         </tr>
                     @endforeach
                 @endif
