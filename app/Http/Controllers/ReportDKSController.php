@@ -14,7 +14,7 @@ class ReportDKSController extends Controller
     {
         $userRoles = explode(',', Auth::user()->role);
 
-        $allowedRoles = ['ADMIN', 'SALESMAN', 'HEAD-MARKETING'];
+        $allowedRoles = ['ADMIN', 'SUPERVISOR-AREA', 'HEAD-MARKETING'];
 
         if (empty(array_intersect($allowedRoles, $userRoles))) {
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
