@@ -8,6 +8,8 @@
         'Friday' => 'Jumat',
         'Saturday' => 'Sabtu',
     ];
+    
+    $tokoAbsen = ['6B', '6C', '6D', '6F', '6H'];
 @endphp
 
 <div>

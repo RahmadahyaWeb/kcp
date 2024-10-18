@@ -10,7 +10,7 @@
                     <b>DKS Monitoring</b>
                 </div>
                 <div class="col d-flex justify-content-end">
-                    <a href="" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <a href="" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalScan">
                         <i class="bx bx-qr-scan me-2"></i>
                         Scan
                     </a>
@@ -33,7 +33,7 @@
     </div>
 
     <!-- Modal SCAN-->
-    <div class="modal fade" id="exampleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    <div class="modal fade" id="modalScan" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -59,6 +59,27 @@
                         <button id="start-button" class="btn btn-success">Start Scanning</button>
                         <button id="stop-button" class="btn btn-danger d-none" style="display: none;">Stop Scanning</button>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- MODAL KHUSUS TOKO > 2 --}}
+    <div class="modal fade" id="modal2Toko" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <a href="">Sinar Taqwa 1</a>
+                    <a href="">Sinar Taqwa 2</a>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
                 </div>
             </div>
         </div>
@@ -96,16 +117,33 @@
                             document.getElementById("loading").classList.remove('d-none');
                             document.getElementById("stop-button").classList.add('d-none');
 
-                            html5QrCode.stop().then(() => {
-                                window.location.href = redirectUrl;
-                            });
+                            if (kd_toko == 'TQ') {
+                                const modal2Toko = new bootstrap.Modal(document.getElementById(
+                                    'modal2Toko'));
+                                const modalScanElement = document.getElementById('modalScan');
+
+                                modalScanElement.classList.remove('show');
+
+                                const backdrop = document.querySelector('.modal-backdrop');
+                                if (backdrop) {
+                                    backdrop.remove();
+                                }
+
+                                html5QrCode.stop().then(() => {
+                                    modal2Toko.show();
+                                });
+                            } else {
+                                html5QrCode.stop().then(() => {
+                                    window.location.href = redirectUrl;
+                                });
+                            }
 
                         };
 
                         html5QrCode.start({
                             facingMode: {
-                                exact: "environment"
-                                // exact: "user"
+                                // exact: "environment"
+                                exact: "user"
                             }
                         }, config, qrCodeSuccessCallback).then(() => {
                             scanning = true;

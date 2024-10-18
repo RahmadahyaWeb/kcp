@@ -33,8 +33,24 @@ class DksController extends Controller
                 ->where('kd_toko', $kd_toko)
                 ->first();
 
+            // JIKA TOKO PUNYA TOKO KEDUA DENGAN KODE YANG SAMA
+            // LIST TOKO YANG PUNYA DUA TOKO => TQ.
+            $tokoKedua = [];
+            if ($kd_toko == 'TQ') {
+                $tokoKedua = DB::table('master_toko')
+                    ->select([
+                        'kd_toko',
+                        'nama_toko',
+                        'latitude',
+                        'longitude'
+                    ])
+                    ->where('kd_toko', 'like', "%$kd_toko%")
+                    ->where('kd_toko', '!=', $kd_toko)
+                    ->first();
+            }
+
             if ($toko) {
-                return view('dks.submit', compact('toko'));
+                return view('dks.submit', compact('toko', 'tokoKedua'));
             } else {
                 return redirect()->route('dks.scan')->with('error', "Toko dengan kode $kd_toko tidak ditemukan.");
             }
