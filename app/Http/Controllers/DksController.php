@@ -28,7 +28,8 @@ class DksController extends Controller
                     'kd_toko',
                     'nama_toko',
                     'latitude',
-                    'longitude'
+                    'longitude',
+                    'kd_toko'
                 ])
                 ->where('kd_toko', $kd_toko)
                 ->first();
