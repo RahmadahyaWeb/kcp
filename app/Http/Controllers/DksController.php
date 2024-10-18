@@ -10,8 +10,11 @@ class DksController extends Controller
 {
     public function guard()
     {
-        // ADMIN,SALESMAN,HEAD-MARKETING
-        if (Auth::user()->role != 'ADMIN' && Auth::user()->role != 'SALESMAN') {
+        $userRoles = explode(',', Auth::user()->role);
+
+        $allowedRoles = ['ADMIN', 'SALESMAN'];
+
+        if (empty(array_intersect($allowedRoles, $userRoles))) {
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
     }

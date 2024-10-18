@@ -12,7 +12,11 @@ class ReportDKSController extends Controller
 {
     public function guard()
     {
-        if (Auth::user()->role != 'ADMIN' && Auth::user()->role != 'SUPERVISOR-AREA' && Auth::user()->role != 'HEAD-MARKETING') {
+        $userRoles = explode(',', Auth::user()->role);
+
+        $allowedRoles = ['ADMIN', 'SALESMAN', 'HEAD-MARKETING'];
+
+        if (empty(array_intersect($allowedRoles, $userRoles))) {
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
     }
@@ -27,8 +31,6 @@ class ReportDKSController extends Controller
     public function export(Request $request)
     {
         $this->guard();
-
-        // return 'Sedang Perbaikan';
 
         $request->validate([
             'fromDate'  => 'required',

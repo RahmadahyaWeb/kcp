@@ -34,9 +34,10 @@
         @foreach ($menuList as $menu)
             @php
                 $access = $array = explode(',', $menu['access']);
+                $userRoles = explode(',', Auth::user()->role);
             @endphp
 
-            @if (in_array(Auth::user()->role, $access))
+            @if (array_intersect($userRoles, $access))
                 @if ($menu['is_header'])
                     <li class="menu-header small text-uppercase">
                         <span class="menu-header-text">{{ $menu['title'] }}</span>

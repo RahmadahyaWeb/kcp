@@ -10,7 +10,11 @@ class MasterTokoController extends Controller
 {
     public function guard()
     {
-        if (Auth::user()->role != 'ADMIN') {
+        $userRoles = explode(',', Auth::user()->role);
+
+        $allowedRoles = ['ADMIN'];
+
+        if (empty(array_intersect($allowedRoles, $userRoles))) {
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
     }
@@ -82,6 +86,8 @@ class MasterTokoController extends Controller
 
     public function edit($kd_toko)
     {
+        $this->guard();
+
         $item = DB::table('master_toko', $kd_toko)->where('kd_toko', $kd_toko)->first();
 
         return view('master_toko.edit', compact('item'));
