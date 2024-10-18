@@ -256,7 +256,7 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
         $waktu_istirahat = $isFriday ? 105 : 75;
         $max_durasi_lama_perjalanan_plus_waktu_istirahat = $waktu_istirahat + $max_durasi_lama_perjalanan;
 
-        if ($keterangan == 'ist') {
+        if (strpos($keterangan, 'ist') !== false) {
             $punishment_durasi_lama_perjalanan = ($lama_perjalanan_dalam_menit > $max_durasi_lama_perjalanan_plus_waktu_istirahat) ? 1 : 0;
         } else {
             $punishment_durasi_lama_perjalanan = ($lama_perjalanan_dalam_menit > $max_durasi_lama_perjalanan) ? 1 : 0;
