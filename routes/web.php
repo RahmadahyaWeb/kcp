@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AopController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DksController;
 use App\Http\Controllers\MasterTokoController;
@@ -45,6 +46,10 @@ Route::middleware(['auth', 'check.online', 'auth.session'])->group(function () {
     Route::get('master-toko/edit/{kd_toko}', [MasterTokoController::class, 'edit'])->name('master-toko.edit');
     Route::put('master-toko/update/{kd_toko}', [MasterTokoController::class, 'update'])->name('master-toko.update');
     Route::delete('master-toko/destroy/{kd_toko}', [MasterTokoController::class, 'destroy'])->name('master-toko.destroy');
+
+    // AOP UPLOAD FILE
+    Route::get('/aop-upload', [AopController::class, 'indexUpload'])->name('aop-upload.index');
+    Route::post('/aop-upload/store', [AopController::class, 'store'])->name('aop-upload.store');
 
     // LOGOUT
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
