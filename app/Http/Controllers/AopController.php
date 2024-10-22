@@ -9,8 +9,21 @@ use Illuminate\Support\Facades\DB;
 class AopController extends Controller
 {
 
+    public function guard()
+    {
+        $userRoles = explode(',', Auth::user()->role);
+
+        $allowedRoles = ['ADMIN'];
+
+        if (empty(array_intersect($allowedRoles, $userRoles))) {
+            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
+        }
+    }
+
     public function indexUpload()
     {
+        $this->guard();
+
         return view('uploadAOP.index');
     }
 
