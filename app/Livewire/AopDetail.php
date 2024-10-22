@@ -18,6 +18,32 @@ class AopDetail extends Component
         HTML;
     }
 
+    public $fakturPajak;
+    public $editingFakturPajak;
+
+    public function openModal()
+    {
+        $invoice = DB::table('invoice_aop_header')
+            ->select(['*'])
+            ->where('invoiceAop', $this->invoiceAop)
+            ->first();
+
+        $this->fakturPajak = $invoice->fakturPajak;
+
+        $this->dispatch('openModal');
+    }
+
+    public function saveFakturPajak()
+    {
+        DB::table('invoice_aop_header')
+            ->where('invoiceAop', $this->invoiceAop)
+            ->update([
+                'fakturPajak' => $this->fakturPajak
+            ]);
+
+        $this->dispatch('fakturPajakUpdate');
+    }
+
     public $invoiceAop;
 
     public function mount($invoiceAop)
@@ -35,6 +61,8 @@ class AopDetail extends Component
         $details = DB::table('invoice_aop_detail')
             ->select(['*'])
             ->get();
+
+        $this->fakturPajak = $header->fakturPajak;
 
         return view('livewire.aop-detail', compact(
             'header',
