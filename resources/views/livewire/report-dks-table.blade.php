@@ -67,7 +67,7 @@
         </form>
     </div>
 
-    <div wire:loading.block wire:target="fromDate, toDate, user_sales, kd_toko" class="text-center">
+    <div wire:loading.block wire:target="fromDate, toDate, user_sales, kd_toko, gotoPage" class="text-center">
         <div class="spinner-border" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
