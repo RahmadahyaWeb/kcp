@@ -53,7 +53,11 @@
                                             <input type="checkbox" wire:model.live="selectedInvoices"
                                                 value="{{ $invoice->invoiceAop }}" />
                                         </td>
-                                        <td>{{ $invoice->invoiceAop }}</td>
+                                        <td>
+                                            <a href="{{ route('aop-upload.detail', $invoice->invoiceAop) }}">
+                                                {{ $invoice->invoiceAop }}
+                                            </a>
+                                        </td>
                                         <td>{{ $invoice->customerTo }}</td>
                                         <td>{{ $invoice->billingDocumentDate }}</td>
                                         <td>{{ $invoice->tanggalJatuhTempo }}</td>

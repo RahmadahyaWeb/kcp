@@ -45,6 +45,8 @@ class AopDetail extends Component
     }
 
     public $invoiceAop;
+    public $totalAmount;
+    public $totalQty;
 
     public function mount($invoiceAop)
     {
@@ -60,13 +62,25 @@ class AopDetail extends Component
 
         $details = DB::table('invoice_aop_detail')
             ->select(['*'])
+            ->where('invoiceAop', $this->invoiceAop)
             ->get();
+
+        $totalAmount = DB::table('invoice_aop_detail')
+            ->where('invoiceAop', $this->invoiceAop)
+            ->sum('amount');
+
+        $totalQty = DB::table('invoice_aop_detail')
+            ->where('invoiceAop', $this->invoiceAop)
+            ->sum('qty');
+
+        $this->totalAmount = $totalAmount;
+        $this->totalQty = $totalQty;
 
         $this->fakturPajak = $header->fakturPajak;
 
         return view('livewire.aop-detail', compact(
             'header',
-            'details'
+            'details',
         ));
     }
 }

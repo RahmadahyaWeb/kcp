@@ -3,10 +3,7 @@
 @section('title', 'Upload File AOP')
 
 @section('content')
-    <div class="row">
-        <livewire:aop-detail :invoiceAop="$invoiceAop" lazy />
-
-    </div>
+    <livewire:aop-detail :invoiceAop="$invoiceAop" lazy />
 @endsection
 
 @push('scripts')
