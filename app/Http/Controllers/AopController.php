@@ -27,6 +27,13 @@ class AopController extends Controller
         return view('uploadAOP.index');
     }
 
+    public function detail($invoiceAop)
+    {
+        $this->guard();
+
+        return view('uploadAOP.detail', compact('invoiceAop'));
+    }
+
     public function store(Request $request)
     {
         $request->validate([

@@ -13,7 +13,7 @@ $scrollIntoViewJsSnippet = ($scrollTo !== false)
 <div>
     @if ($paginator->hasPages())
         <nav class="d-flex justify-items-center justify-content-between">
-            <div class="d-flex justify-content-center flex-fill d-sm-none">
+            <div class="d-flex justify-content-between flex-fill d-sm-none">
                 <ul class="pagination">
                     {{-- Previous Page Link --}}
                     @if ($paginator->onFirstPage())

@@ -5,13 +5,13 @@ namespace App\Livewire;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
 
 class AopUploadTable extends Component
 {
-    use WithPagination;
-
-    use WithPagination;
+    use WithPagination, WithoutUrlPagination;
+    
     protected $paginationTheme = 'bootstrap';
 
     public $selectedInvoices = [];
@@ -23,6 +23,21 @@ class AopUploadTable extends Component
     public function updatedSelectedInvoices($value)
     {
         $selectedInvoices[] = $value;
+    }
+
+
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <div>
+             Loading...
+        </div>
+        HTML;
+    }
+
+    public function search()
+    {
+        $this->resetPage();
     }
 
     #[On('file-uploaded')]

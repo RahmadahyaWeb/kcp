@@ -7,17 +7,17 @@
                         <div class="col">
                             <b>Data AOP</b>
                         </div>
-                        {{-- <div class="col d-flex justify-content-end">
+                        <div class="col d-flex justify-content-end">
                             <button wire:click="processSelectedInvoices" class="btn btn-warning"
                                 {{ count($selectedInvoices) == 0 ? 'disabled' : '' }}>
                                 Kirim ke Bosnet <span
                                     class="badge text-bg-danger ms-3">{{ count($selectedInvoices) }}</span>
                             </button>
-                        </div> --}}
+                        </div>
                     </div>
                 </div>
                 <div class="card-body">
-                    <div wire:loading.block wire:target="save" class="text-center">
+                    <div wire:loading.block wire:target="save, gotoPage" class="text-center">
                         <div class="spinner-border" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
@@ -26,7 +26,7 @@
                         </div>
                     </div>
 
-                    <div wire:loading.class="d-none" wire:target="save" class="table-responsive">
+                    <div wire:loading.class="d-none" wire:target="save, gotoPage" class="table-responsive">
                         <table class="table table-bordered table-hover table-sm">
                             <thead>
                                 <tr>
@@ -43,7 +43,7 @@
                                     <th>Net Sales (Rp)</th>
                                     <th>Tax (Rp)</th>
                                     <th>Grand Total (Rp)</th>
-                                    <th>Action</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -66,9 +66,8 @@
                                         <td>{{ number_format($invoice->tax, 0, ',', '.') }}</td>
                                         <td>{{ number_format($invoice->grandTotal, 0, ',', '.') }}</td>
                                         <td>
-                                            <a href="" data-bs-title="Detail: {{ $invoice->invoiceAop }}"
-                                                data-bs-toggle="tooltip">
-                                                <i class='bx bxs-folder-open'></i>
+                                            <a href="{{ route('aop-upload.detail', $invoice->invoiceAop) }}">
+                                                Detail
                                             </a>
                                         </td>
                                     </tr>

@@ -27,12 +27,27 @@ class AopUpload extends Component
             'rekap_tagihan.required' => 'Upload file rekap tagihan.',
         ]);
 
+        $suratTagihanFileName = $this->surat_tagihan->getClientOriginalName();
+        $rekapTagihanFileName = $this->rekap_tagihan->getClientOriginalName();
+
+        preg_match('/_(\d{8})_/', $rekapTagihanFileName, $rekapTanggalMatch);
+        preg_match('/_(\d{8})_/', $suratTagihanFileName, $suratTanggalMatch);
+
+        if (!empty($rekapTanggalMatch[1]) && !empty($suratTanggalMatch[1])) {
+            $rekapTanggal = $rekapTanggalMatch[1];
+            $suratTanggal = $suratTanggalMatch[1];
+
+            if ($rekapTanggal !== $suratTanggal) {
+                $this->addError('surat_tagihan', 'Tanggal surat tagihan dan rekap tagihan tidak sesuai.');
+            }
+        }
+
         // VALIDASI NAMA FILE
-        if ($this->surat_tagihan && !str_contains($this->surat_tagihan->getClientOriginalName(), 'surat_tagihan')) {
+        if ($this->surat_tagihan && !str_contains($suratTagihanFileName, 'surat_tagihan')) {
             $this->addError('surat_tagihan', 'File tidak sesuai.');
         }
 
-        if ($this->rekap_tagihan && !str_contains($this->rekap_tagihan->getClientOriginalName(), 'rekap_tagihan')) {
+        if ($this->rekap_tagihan && !str_contains($rekapTagihanFileName, 'rekap_tagihan')) {
             $this->addError('rekap_tagihan', 'File tidak sesuai.');
         }
 
@@ -277,16 +292,6 @@ class AopUpload extends Component
         }
 
         return true;
-    }
-
-    public function placeholder()
-    {
-        return <<<'HTML'
-        <div>
-            <!-- Loading spinner... -->
-            <svg>...</svg>
-        </div>
-        HTML;
     }
 
     public function render()
