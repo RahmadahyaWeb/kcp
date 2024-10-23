@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Upload File AOP')
+@section('title', "Detail $invoiceAop")
 
 @section('content')
     <livewire:aop-detail :invoiceAop="$invoiceAop" lazy />
