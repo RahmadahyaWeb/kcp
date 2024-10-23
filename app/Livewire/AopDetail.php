@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 class AopDetail extends Component
@@ -31,6 +32,58 @@ class AopDetail extends Component
         $this->fakturPajak = $invoice->fakturPajak;
 
         $this->dispatch('openModal');
+    }
+
+    #[Validate('required')]
+    public $potonganProgram = '';
+
+    #[Validate('required')]
+    public $keteranganProgram = '';
+
+    public $customerTo;
+    public $tanggalInvoice;
+
+    public $class;
+    public $style;
+
+    public function openModalProgram()
+    {
+        $this->dispatch('openModalProgram');
+    }
+
+    public function closeModalProgram()
+    {
+        $this->dispatch('programSaved');
+    }
+
+    public function saveProgram()
+    {
+        $this->class = "show";
+        $this->style = "display: block;";
+
+        $validated = $this->validate();
+
+        $validated['customerTo'] = $this->customerTo;
+        $validated['invoiceAop'] = $this->invoiceAop;
+        $validated['tanggalInvoice'] = $this->tanggalInvoice;
+
+        DB::table('program_aop')
+            ->insert($validated);
+
+        $this->dispatch('programSaved');
+
+        $this->class = "";
+        $this->style = "";
+
+        $this->reset('potonganProgram');
+        $this->reset('keteranganProgram');
+    }
+
+    public function destroyProgram($id)
+    {
+        DB::table('program_aop')
+            ->where('id', $id)
+            ->delete();
     }
 
     public function saveFakturPajak()
@@ -77,10 +130,18 @@ class AopDetail extends Component
         $this->totalQty = $totalQty;
 
         $this->fakturPajak = $header->fakturPajak;
+        $this->tanggalInvoice = $header->billingDocumentDate;
+        $this->customerTo = $header->customerTo;
+
+        $programAop = DB::table('program_aop')
+            ->select(['*'])
+            ->where('invoiceAop', $this->invoiceAop)
+            ->get();
 
         return view('livewire.aop-detail', compact(
             'header',
             'details',
+            'programAop'
         ));
     }
 }

@@ -11,7 +11,7 @@ use Livewire\WithPagination;
 class AopUploadTable extends Component
 {
     use WithPagination, WithoutUrlPagination;
-    
+
     protected $paginationTheme = 'bootstrap';
 
     public $selectedInvoices = [];
@@ -35,6 +35,7 @@ class AopUploadTable extends Component
         HTML;
     }
 
+    public $invoiceAop;
     public function search()
     {
         $this->resetPage();
@@ -45,6 +46,9 @@ class AopUploadTable extends Component
     {
         $invoiceAopHeader = DB::table('invoice_aop_header')
             ->select(['*'])
+            ->when($this->invoiceAop, function ($query) {
+                return $query->where('invoiceAop', 'like', '%' . $this->invoiceAop . '%');
+            })
             ->orderBy('billingDocumentDate', 'asc')
             ->paginate(20);
 

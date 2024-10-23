@@ -202,30 +202,6 @@
             </div>
         </div>
 
-        {{-- MODAL EDIT FAKTUR PAJAK --}}
-        <div class="modal fade" id="editFakturPajakModal" tabindex="-1" aria-labelledby="editFakturPajakModalLabel"
-            aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-            <div class="modal-dialog modal-dialog-centered modal-sm">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="editFakturPajakModalLabel">
-                            Edit Faktur Pajak
-                        </h1>
-                    </div>
-                    <div class="modal-body">
-                        <form wire:submit="saveFakturPajak">
-                            <label for="form-label">Faktur Pajak</label>
-                            <input type="text" class="form-control" wire:model="fakturPajak">
-                            <div class="d-flex justify-content-end mt-2 gap-2">
-                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
-                                <button type="submit" class="btn btn-primary">Simpan</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         {{-- CARD EXTRA PLAFON DISCOUNT  --}}
         <div class="col-12 mb-3">
             <div class="card">
@@ -235,26 +211,53 @@
                             Extra Plafon Discount (Disc Program)
                         </div>
                         <div class="col d-flex justify-content-end">
-                            <button class="btn btn-primary">Tambah Program</button>
+                            <button wire:click="openModalProgram" class="btn btn-primary">Tambah
+                                Program</button>
                         </div>
                     </div>
                     <hr>
                 </div>
                 <div class="card-body">
-                    <table class="table table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th>Discount</th>
-                                <th>Keterangan</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>0</td>
-                                <td>Disc Program</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    @if ($programAop->isEmpty())
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Discount (Rp)</th>
+                                    <th>Keterangan</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center" colspan="2">No Data</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    @else
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Discount (Rp)</th>
+                                    <th>Keterangan</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($programAop as $item)
+                                    <tr>
+                                        <td>{{ number_format($item->potonganProgram, 0, ',', '.') }}</td>
+                                        <td>{{ $item->keteranganProgram }}</td>
+                                        <td>
+                                            <button class="btn btn-danger btn-sm"
+                                                wire:click="destroyProgram({{ $item->id }})">
+                                                Hapus
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @endif
                 </div>
             </div>
         </div>
@@ -301,6 +304,76 @@
                                 @endforeach
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- MODAL EDIT FAKTUR PAJAK --}}
+        <div class="modal fade" id="editFakturPajakModal" tabindex="-1" aria-labelledby="editFakturPajakModalLabel"
+            aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="editFakturPajakModalLabel">
+                            Edit Faktur Pajak
+                        </h1>
+                    </div>
+                    <div class="modal-body">
+                        <form wire:submit="saveFakturPajak">
+                            <label for="fakturPajak" class="form-label">Faktur Pajak</label>
+                            <input type="text" class="form-control" wire:model="fakturPajak">
+                            <div class="d-flex justify-content-end mt-2 gap-2">
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
+                                <button type="submit" class="btn btn-primary">Simpan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- MODAL Tambah Program --}}
+        <div class="modal fade {{ $class }}" id="createProgramModal" tabindex="-1"
+            aria-labelledby="createProgramModalLabel" aria-hidden="true" style="{{ $style }}"
+            data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="createProgramModalLabel">Tambah Extra Plafon Discount</h1>
+                    </div>
+                    <div class="modal-body">
+                        <form wire:submit="saveProgram">
+                            <div class="row gap-3">
+                                <div class="col-12">
+                                    <label for="potonganProgram" class="form-label">Potongan Harga</label>
+                                    <input type="number"
+                                        class="form-control @error('potonganProgram') is-invalid @enderror"
+                                        wire:model="potonganProgram">
+                                    @error('potonganProgram')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                                <div class="col-12">
+                                    <label for="keteranganProgram" class="form-label">Keterangan Program</label>
+                                    <input type="text"
+                                        class="form-control @error('keteranganProgram') is-invalid @enderror"
+                                        wire:model="keteranganProgram">
+                                    @error('keteranganProgram')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                                <div class="col-12 d-flex justify-content-end mt-2 gap-2">
+                                    <button type="button" class="btn btn-danger"
+                                        wire:click="closeModalProgram">Batal</button>
+                                    <button type="submit" class="btn btn-primary">Simpan</button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
