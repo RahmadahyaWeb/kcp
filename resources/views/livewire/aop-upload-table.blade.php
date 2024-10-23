@@ -7,13 +7,13 @@
                         <div class="col">
                             <b>Data AOP</b>
                         </div>
-                        <div class="col d-flex justify-content-end">
+                        {{-- <div class="col d-flex justify-content-end">
                             <button wire:click="processSelectedInvoices" class="btn btn-warning"
                                 {{ count($selectedInvoices) == 0 ? 'disabled' : '' }}>
                                 Kirim ke Bosnet <span
                                     class="badge text-bg-danger ms-3">{{ count($selectedInvoices) }}</span>
                             </button>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
                 <div class="card-body">
