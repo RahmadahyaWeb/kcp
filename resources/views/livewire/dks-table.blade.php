@@ -43,11 +43,13 @@
                             <td>{{ $item->nama_toko }}</td>
                             <td>{{ date('H:i:s', strtotime($item->waktu_cek_in)) }}</td>
                             @if (in_array($item->kd_toko, $tokoAbsen))
-                                @if ($item->waktu_cek_out)
-                                    {{ date('H:i:s', strtotime($item->waktu_cek_out)) }}
-                                @else
-                                    Belum check out
-                                @endif
+                                <td>
+                                    @if ($item->waktu_cek_out)
+                                        {{ date('H:i:s', strtotime($item->waktu_cek_out)) }}
+                                    @else
+                                        Belum check out
+                                    @endif
+                                </td>
                                 <td>-</td>
                                 <td>Absen Toko</td>
                             @else
