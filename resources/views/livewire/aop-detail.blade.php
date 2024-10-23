@@ -105,12 +105,14 @@
                                     <div>
                                         @if ($header->fakturPajak != null)
                                             <div class="d-inline text-primary" style="cursor: pointer"
-                                                data-bs-toggle="modal" wire:click="openModal">
+                                                data-bs-toggle="modal" data-bs-target="#editFakturPajakModal"
+                                                wire:click="openModal">
                                                 {{ $header->fakturPajak }}
                                             </div>
                                         @else
                                             <div class="d-inline text-primary" style="cursor: pointer"
-                                                data-bs-toggle="modal" wire:click="openModal">
+                                                data-bs-toggle="modal" data-bs-target="#editFakturPajakModal"
+                                                wire:click="openModal">
                                                 Belum ada
                                             </div>
                                         @endif
@@ -211,8 +213,10 @@
                             Extra Plafon Discount (Disc Program)
                         </div>
                         <div class="col d-flex justify-content-end">
-                            <button wire:click="openModalProgram" class="btn btn-primary">Tambah
-                                Program</button>
+                            <button data-bs-toggle="modal" data-bs-target="#createProgramModal"
+                                class="btn btn-primary">
+                                Tambah Program
+                            </button>
                         </div>
                     </div>
                     <hr>
@@ -310,8 +314,9 @@
         </div>
 
         {{-- MODAL EDIT FAKTUR PAJAK --}}
-        <div class="modal fade" id="editFakturPajakModal" tabindex="-1" aria-labelledby="editFakturPajakModalLabel"
-            aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal fade {{ $class }}" id="editFakturPajakModal" tabindex="-1"
+            aria-labelledby="editFakturPajakModalLabel" aria-hidden="true" style="{{ $style }}"
+            data-bs-backdrop="static" data-bs-keyboard="false">
             <div class="modal-dialog modal-dialog-centered modal-sm">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -369,7 +374,7 @@
                                 </div>
                                 <div class="col-12 d-flex justify-content-end mt-2 gap-2">
                                     <button type="button" class="btn btn-danger"
-                                        wire:click="closeModalProgram">Batal</button>
+                                        wire:click="closeModalProgram" data-bs-dismiss="modal">Batal</button>
                                     <button type="submit" class="btn btn-primary">Simpan</button>
                                 </div>
                             </div>

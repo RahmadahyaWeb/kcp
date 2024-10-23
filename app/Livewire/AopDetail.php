@@ -22,16 +22,25 @@ class AopDetail extends Component
     public $fakturPajak;
     public $editingFakturPajak;
 
+    public $class;
+    public $style;
+
     public function openModal()
     {
+        $this->class = "show";
+        $this->style = "display: block;";
+
         $invoice = DB::table('invoice_aop_header')
             ->select(['*'])
             ->where('invoiceAop', $this->invoiceAop)
             ->first();
 
         $this->fakturPajak = $invoice->fakturPajak;
+    }
 
-        $this->dispatch('openModal');
+    public function closeModalProgram()
+    {
+        $this->resetValidation(['potonganProgram', 'keteranganProgram']);
     }
 
     #[Validate('required')]
@@ -42,19 +51,6 @@ class AopDetail extends Component
 
     public $customerTo;
     public $tanggalInvoice;
-
-    public $class;
-    public $style;
-
-    public function openModalProgram()
-    {
-        $this->dispatch('openModalProgram');
-    }
-
-    public function closeModalProgram()
-    {
-        $this->dispatch('programSaved');
-    }
 
     public function saveProgram()
     {
