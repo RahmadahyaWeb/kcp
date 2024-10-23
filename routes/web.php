@@ -50,7 +50,7 @@ Route::middleware(['auth', 'check.online', 'auth.session'])->group(function () {
     // AOP UPLOAD FILE
     Route::get('/aop-upload', [AopController::class, 'indexUpload'])->name('aop-upload.index');
     Route::post('/aop-upload/store', [AopController::class, 'store'])->name('aop-upload.store');
-    Route::get('/aop-detail/{invoiceAop}', [AopController::class, 'detail'])->name('aop-upload.detail');
+    Route::get('/aop-upload/detail/{invoiceAop}', [AopController::class, 'detail'])->name('aop-upload.detail');
 
     // LOGOUT
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
