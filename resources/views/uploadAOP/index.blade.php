@@ -3,6 +3,5 @@
 @section('title', 'Upload File AOP')
 
 @section('content')
-    <livewire:aop-upload />
-    <livewire:aop-upload-table />
+    <livewire:aop-upload lazy/>
 @endsection
