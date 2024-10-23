@@ -229,7 +229,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td class="text-center" colspan="2">No Data</td>
+                                    <td class="text-center" colspan="3">No Data</td>
                                 </tr>
                             </tbody>
                         </table>
