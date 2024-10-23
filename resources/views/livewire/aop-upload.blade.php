@@ -88,18 +88,20 @@
                             <div class="row mb-3" wire:loading.class="d-none" wire:target="save, gotoPage">
                                 <div class="col-md-6">
                                     <label for="invoiceAop" class="form-label">Invoice AOP</label>
-                                    <input type="text" class="form-control" wire:model.live="invoiceAop">
+                                    <input type="text" class="form-control" wire:model.live.debounce.250ms="invoiceAop">
                                 </div>
                             </div>
 
-                            <div wire:loading.flex wire:target="save, gotoPage, invoiceAop" class="text-center justify-content-center align-items-center" style="height: 200px;">
+                            <div wire:loading.flex wire:target="save, gotoPage, invoiceAop"
+                                class="text-center justify-content-center align-items-center" style="height: 200px;">
                                 <div class="spinner-border" role="status">
                                     <span class="visually-hidden">Loading...</span>
                                 </div>
                             </div>
 
                             @if ($invoiceAopHeader->isEmpty())
-                                <div wire:loading.class="d-none" wire:target="save, gotoPage, invoiceAop" class="table-responsive">
+                                <div wire:loading.class="d-none" wire:target="save, gotoPage, invoiceAop"
+                                    class="table-responsive">
                                     <table class="table table-bordered table-hover table-sm">
                                         <thead>
                                             <tr>
@@ -127,7 +129,8 @@
                                     </table>
                                 </div>
                             @else
-                                <div wire:loading.class="d-none" wire:target="save, gotoPage, invoiceAop" class="table-responsive">
+                                <div wire:loading.class="d-none" wire:target="save, gotoPage, invoiceAop"
+                                    class="table-responsive">
                                     <table class="table table-bordered table-hover table-sm">
                                         <thead>
                                             <tr>
