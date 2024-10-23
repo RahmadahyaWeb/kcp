@@ -17,7 +17,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="row mb-3">
+                    <div class="row mb-3" wire:loading.class="d-none" wire:target="save, gotoPage">
                         <div class="col-md-6">
                             <label for="invoiceAop">Invoice AOP</label>
                             <input type="text" class="form-control" wire:model.live="invoiceAop">
