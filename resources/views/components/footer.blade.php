@@ -8,6 +8,9 @@
                     document.write(new Date().getFullYear());
                 </script>, PT Kumala Central Partindo
             </div>
+            <div class="text-body">
+                Designed & Developed by Rahmat
+            </div>
         </div>
     </div>
 </footer>
