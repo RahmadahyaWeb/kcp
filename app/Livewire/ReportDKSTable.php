@@ -16,6 +16,17 @@ class ReportDksTable extends Component
     public $user_sales;
     public $kd_toko;
 
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <div class="d-flex justify-content-center align-items-center" style="height: 75vh;">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+        HTML;
+    }
+
     public function render()
     {
         $items = DB::table('trns_dks AS in_data')

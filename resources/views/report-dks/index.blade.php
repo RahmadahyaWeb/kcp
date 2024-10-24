@@ -13,7 +13,7 @@
             <hr>
         </div>
         <div class="card-body">
-            @livewire('report-dks-table')
+            <livewire:report-dks-table lazy />
         </div>
     </div>
 @endsection
