@@ -10,7 +10,7 @@
 @endsection
 
 @section('content')
-    <livewire:aop-detail :invoiceAop="$invoiceAop" lazy />
+    <livewire:aop-detail :invoiceAop="$invoiceAop" />
 @endsection
 
 @push('scripts')
