@@ -88,7 +88,7 @@
                         <div class="card-body">
                             <div class="row mb-3" wire:loading.class="d-none" wire:target="save, gotoPage">
                                 <div class="col-md-6">
-                                    <input type="text" class="form-control" wire:model.live.debounce.1500ms="invoiceAop" placeholder="Invoice AOP" wire:loading.attr="disabled">
+                                    <input type="text" class="form-control" wire:model.live.debounce.1000ms="invoiceAop" placeholder="Invoice AOP" wire:loading.attr="disabled">
                                 </div>
                             </div>
 
