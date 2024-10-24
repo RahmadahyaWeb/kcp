@@ -84,9 +84,6 @@
                 <div class="spinner-border" role="status">
                     <span class="visually-hidden">Loading...</span>
                 </div>
-                <div class="my-2">
-                    Loading
-                </div>
             </div>
 
             <div wire:loading.class="d-none" class="table-responsive">
@@ -153,7 +150,7 @@
         <div class="card-footer">
             <div wire:loading.class="d-none">
                 {{ $items->links() }}
-            </div>
+            </div>  
         </div>
     </div>
 </div>
