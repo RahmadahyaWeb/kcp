@@ -219,7 +219,7 @@ class AopUpload extends Component
 
             $price = $amount + $addDiscount;
             $netSales = $amount - $extraPlafonDiscount;
-            $tax = $netSales * 0.11;
+            $tax = floor($netSales * 0.11);
             $grandTotal = intval($netSales + $tax);
 
             // CEK APAKAH DATA SUDAH ADA SEBELUMNYA 
