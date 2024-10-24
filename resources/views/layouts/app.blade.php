@@ -81,7 +81,9 @@
             /* Ini harus lebih tinggi dari container dan backdrop */
         }
 
-        #map { height: 200px; }
+        #map {
+            height: 200px;
+        }
     </style>
 
     @livewireStyles
@@ -110,6 +112,9 @@
                     <!-- Content -->
 
                     <div class="container-xxl flex-grow-1 container-p-y">
+                        <nav aria-label="breadcrumb">
+                            @yield('breadcrumb')
+                        </nav>
                         @yield('content')
                     </div>
                     <!-- / Content -->
