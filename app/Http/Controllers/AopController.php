@@ -13,7 +13,7 @@ class AopController extends Controller
     {
         $userRoles = explode(',', Auth::user()->role);
 
-        $allowedRoles = ['ADMIN'];
+        $allowedRoles = ['ADMIN', 'FINANCE'];
 
         if (empty(array_intersect($allowedRoles, $userRoles))) {
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
