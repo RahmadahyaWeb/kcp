@@ -301,7 +301,7 @@ class AopUpload extends Component
     public function placeholder()
     {
         return <<<'HTML'
-        <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <div class="d-flex justify-content-center align-items-center" style="height: 75vh;">
             <div class="spinner-border" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>

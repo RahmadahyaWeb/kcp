@@ -83,11 +83,12 @@
                                     </button>
                                 </div> --}}
                             </div>
+                            <hr>
                         </div>
                         <div class="card-body">
                             <div class="row mb-3" wire:loading.class="d-none" wire:target="save, gotoPage">
                                 <div class="col-md-6">
-                                    <input type="text" class="form-control" wire:model.live.debounce.1000ms="invoiceAop" placeholder="Invoice AOP">
+                                    <input type="text" class="form-control" wire:model.live.debounce.1500ms="invoiceAop" placeholder="Invoice AOP" wire:loading.attr="disabled">
                                 </div>
                             </div>
 
@@ -117,12 +118,11 @@
                                                 <th>Net Sales (Rp)</th>
                                                 <th>Tax (Rp)</th>
                                                 <th>Grand Total (Rp)</th>
-                                                <th></th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td class="text-center" colspan="14">No Data</td>
+                                                <td class="text-center" colspan="13">No Data</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -146,7 +146,6 @@
                                                 <th>Net Sales (Rp)</th>
                                                 <th>Tax (Rp)</th>
                                                 <th>Grand Total (Rp)</th>
-                                                <th></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -174,12 +173,6 @@
                                                     <td>{{ number_format($invoice->netSales, 0, ',', '.') }}</td>
                                                     <td>{{ number_format($invoice->tax, 0, ',', '.') }}</td>
                                                     <td>{{ number_format($invoice->grandTotal, 0, ',', '.') }}</td>
-                                                    <td>
-                                                        <a
-                                                            href="{{ route('aop-upload.detail', $invoice->invoiceAop) }}">
-                                                            Detail
-                                                        </a>
-                                                    </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
