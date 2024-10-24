@@ -100,7 +100,7 @@
                                 </div>
                             </div>
 
-                            <div wire:loading.flex wire:target="save, gotoPage, invoiceAop"
+                            <div wire:loading.flex wire:target="save, gotoPage, invoiceAop, tanggalJatuhTempo"
                                 class="text-center justify-content-center align-items-center" style="height: 200px;">
                                 <div class="spinner-border" role="status">
                                     <span class="visually-hidden">Loading...</span>
