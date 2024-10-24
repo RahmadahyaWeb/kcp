@@ -108,7 +108,7 @@
                             </div>
 
                             @if ($invoiceAopHeader->isEmpty())
-                                <div wire:loading.class="d-none" wire:target="save, gotoPage, invoiceAop"
+                                <div wire:loading.class="d-none" wire:target="save, gotoPage, invoiceAop, tanggalJatuhTempo"
                                     class="table-responsive">
                                     <table class="table table-bordered table-hover table-sm">
                                         <thead>
@@ -136,7 +136,7 @@
                                     </table>
                                 </div>
                             @else
-                                <div wire:loading.class="d-none" wire:target="save, gotoPage, invoiceAop"
+                                <div wire:loading.class="d-none" wire:target="save, gotoPage, invoiceAop, tanggalJatuhTempo"
                                     class="table-responsive">
                                     <table class="table table-bordered table-hover table-sm">
                                         <thead>
@@ -188,7 +188,7 @@
                                 </div>
                             @endif
                         </div>
-                        <div wire:loading.class="d-none" wire:target="save, invoiceAop" class="card-footer">
+                        <div wire:loading.class="d-none" wire:target="save, invoiceAop, tanggalJatuhTempo" class="card-footer">
                             {{ $invoiceAopHeader->links() }}
                         </div>
                     </div>
