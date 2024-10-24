@@ -331,9 +331,7 @@ class AopUpload extends Component
     {
         $invoiceAopHeader = DB::table('invoice_aop_header')
             ->select(['*'])
-            ->when($this->invoiceAop, function ($query) {
-                return $query->where('invoiceAop', 'like', '%' . $this->invoiceAop . '%');
-            })
+            ->where('invoiceAop', 'like', '%' . $this->invoiceAop . '%')
             ->orderBy('billingDocumentDate', 'asc')
             ->paginate(20);
 
