@@ -53,7 +53,7 @@
                                 <div class="col col-auto">
                                     <div>
                                         @if ($header->billingDocumentDate != null)
-                                            {{ $header->billingDocumentDate }}
+                                            {{ date('d-m-Y', strtotime($header->billingDocumentDate)) }}
                                         @else
                                             -
                                         @endif
@@ -70,7 +70,7 @@
                                 <div class="col col-auto">
                                     <div>
                                         @if ($header->tanggalCetakFaktur != null)
-                                            {{ $header->tanggalCetakFaktur }}
+                                            {{ date('d-m-Y', strtotime($header->tanggalCetakFaktur)) }}
                                         @else
                                             -
                                         @endif
@@ -87,7 +87,7 @@
                                 <div class="col col-auto">
                                     <div>
                                         @if ($header->tanggalJatuhTempo != null)
-                                            {{ $header->tanggalJatuhTempo }}
+                                            {{ date('d-m-Y', strtotime($header->tanggalJatuhTempo)) }}
                                         @else
                                             -
                                         @endif
@@ -200,6 +200,19 @@
                             </div>
                         </div>
                     </div>
+                    @if ($header->fakturPajak)
+                        <div class="row">
+                            <form wire:submit="updateFlag({{ $header->invoiceAop }})">
+                                <div class="col d-grid">
+                                    <hr>
+                                    <button type="submit" class="btn btn-success">
+                                        <span wire:loading.remove wire:target="updateFlag">Selesai</span>
+                                        <span wire:loading wire:target="updateFlag">Loading...</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -213,8 +226,7 @@
                             Extra Plafon Discount (Disc Program)
                         </div>
                         <div class="col d-flex justify-content-end">
-                            <button data-bs-toggle="modal" data-bs-target="#createProgramModal"
-                                class="btn btn-primary">
+                            <button data-bs-toggle="modal" data-bs-target="#createProgramModal" class="btn btn-primary">
                                 Tambah Program
                             </button>
                         </div>
@@ -373,8 +385,8 @@
                                     @enderror
                                 </div>
                                 <div class="col-12 d-flex justify-content-end mt-2 gap-2">
-                                    <button type="button" class="btn btn-danger"
-                                        wire:click="closeModalProgram" data-bs-dismiss="modal">Batal</button>
+                                    <button type="button" class="btn btn-danger" wire:click="closeModalProgram"
+                                        data-bs-dismiss="modal">Batal</button>
                                     <button type="submit" class="btn btn-primary">Simpan</button>
                                 </div>
                             </div>

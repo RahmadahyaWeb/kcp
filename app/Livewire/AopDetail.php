@@ -96,6 +96,19 @@ class AopDetail extends Component
         $this->dispatch('fakturPajakUpdate');
     }
 
+    public function updateFlag($invoiceAop)
+    {
+        DB::table('invoice_aop_header')
+            ->where('invoiceAop', $invoiceAop)
+            ->update([
+                'flag_selesai' => 'Y'
+            ]);
+
+        session()->flash('status', "Flag $invoiceAop berhasil disimpan!");
+
+        $this->redirect('/aop-upload');
+    }
+
     public $invoiceAop;
     public $totalAmount;
     public $totalQty;

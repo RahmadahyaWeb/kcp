@@ -252,6 +252,7 @@ class AopUpload extends Component
                         'created_at'            => now(),
                         'updated_at'            => now(),
                         'status'                => 'KCP',
+                        'flag_selesai'          => 'N'
                     ]);
                 } catch (\Exception $e) {
                     $this->notification = 'Error when uploading';
@@ -309,10 +310,11 @@ class AopUpload extends Component
         HTML;
     }
 
-    public $selectedInvoices;
-    public function processSelectedInvoices()
+    public $selectedInvoices = [];
+    public function processSelected()
     {
-        dd($this->selectedInvoices);
+        // Logic to process the selected invoices
+        // You can access the selected IDs via $this->selectedInvoices
     }
 
     public function updatedSelectedInvoices($value)
@@ -333,12 +335,13 @@ class AopUpload extends Component
         $invoiceAopHeader = DB::table('invoice_aop_header')
             ->select(['*'])
             ->where('invoiceAop', 'like', '%' . $this->invoiceAop . '%')
+            ->where('flag_selesai', '!=', 'Y')
             ->when($this->tanggalJatuhTempo, function ($query) {
                 return $query->where('tanggalJatuhTempo', $this->tanggalJatuhTempo);
             })
             ->orderBy('billingDocumentDate', 'asc')
             ->paginate(20);
-    
+
         return view('livewire.aop-upload', compact('invoiceAopHeader'));
     }
 }

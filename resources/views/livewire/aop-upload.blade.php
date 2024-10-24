@@ -1,4 +1,10 @@
 <div>
+    @if (session('status'))
+        <div class="alert alert-primary alert-dismissible fade show" role="alert">
+            {{ session('status') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
     <div class="row gap-3">
         {{-- FILE UPLOAD --}}
         <div class="col-12">
@@ -75,13 +81,6 @@
                                 <div class="col">
                                     <b>Data AOP</b>
                                 </div>
-                                {{-- <div class="col d-flex justify-content-end">
-                                    <button wire:click="processSelectedInvoices" class="btn btn-warning"
-                                        {{ count($selectedInvoices) == 0 ? 'disabled' : '' }}>
-                                        Kirim ke Bosnet <span
-                                            class="badge text-bg-danger ms-3">{{ count($selectedInvoices) }}</span>
-                                    </button>
-                                </div> --}}
                             </div>
                             <hr>
                         </div>
@@ -108,12 +107,12 @@
                             </div>
 
                             @if ($invoiceAopHeader->isEmpty())
-                                <div wire:loading.class="d-none" wire:target="save, gotoPage, invoiceAop, tanggalJatuhTempo"
+                                <div wire:loading.class="d-none"
+                                    wire:target="save, gotoPage, invoiceAop, tanggalJatuhTempo"
                                     class="table-responsive">
-                                    <table class="table table-bordered table-hover table-sm">
+                                    <table class="table table-bordered table-hover">
                                         <thead>
                                             <tr>
-                                                <th></th>
                                                 <th>Invoice AOP</th>
                                                 <th>Customer To</th>
                                                 <th>Billing Document Date</th>
@@ -130,18 +129,18 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td class="text-center" colspan="13">No Data</td>
+                                                <td class="text-center" colspan="12">No Data</td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
                             @else
-                                <div wire:loading.class="d-none" wire:target="save, gotoPage, invoiceAop, tanggalJatuhTempo"
+                                <div wire:loading.class="d-none"
+                                    wire:target="save, gotoPage, invoiceAop, tanggalJatuhTempo"
                                     class="table-responsive">
-                                    <table class="table table-bordered table-hover table-sm">
+                                    <table class="table table-bordered table-hover">
                                         <thead>
                                             <tr>
-                                                <th></th>
                                                 <th>Invoice AOP</th>
                                                 <th>Customer To</th>
                                                 <th>Billing Document Date</th>
@@ -160,18 +159,15 @@
                                             @foreach ($invoiceAopHeader as $invoice)
                                                 <tr>
                                                     <td>
-                                                        <input type="checkbox" wire:model.live="selectedInvoices"
-                                                            value="{{ $invoice->invoiceAop }}" />
-                                                    </td>
-                                                    <td>
                                                         <a
                                                             href="{{ route('aop-upload.detail', $invoice->invoiceAop) }}">
                                                             {{ $invoice->invoiceAop }}
                                                         </a>
                                                     </td>
                                                     <td>{{ $invoice->customerTo }}</td>
-                                                    <td>{{ $invoice->billingDocumentDate }}</td>
-                                                    <td>{{ $invoice->tanggalJatuhTempo }}</td>
+                                                    <td>{{ date('d-m-Y', strtotime($invoice->billingDocumentDate)) }}
+                                                    </td>
+                                                    <td>{{ date('d-m-Y', strtotime($invoice->tanggalJatuhTempo)) }}</td>
                                                     <td>{{ number_format($invoice->price, 0, ',', '.') }}</td>
                                                     <td>{{ number_format($invoice->addDiscount, 0, ',', '.') }}</td>
                                                     <td>{{ number_format($invoice->amount, 0, ',', '.') }}</td>
@@ -188,7 +184,8 @@
                                 </div>
                             @endif
                         </div>
-                        <div wire:loading.class="d-none" wire:target="save, invoiceAop, tanggalJatuhTempo" class="card-footer">
+                        <div wire:loading.class="d-none" wire:target="save, invoiceAop, tanggalJatuhTempo"
+                            class="card-footer">
                             {{ $invoiceAopHeader->links() }}
                         </div>
                     </div>
