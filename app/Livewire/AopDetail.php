@@ -41,6 +41,9 @@ class AopDetail extends Component
     public function closeModalProgram()
     {
         $this->resetValidation(['potonganProgram', 'keteranganProgram']);
+
+        $this->class = "";
+        $this->style = "";
     }
 
     #[Validate('required')]
