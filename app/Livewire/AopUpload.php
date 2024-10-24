@@ -321,6 +321,7 @@ class AopUpload extends Component
     }
 
     public $invoiceAop;
+    public $tanggalJatuhTempo;
 
     public function search()
     {
@@ -332,9 +333,12 @@ class AopUpload extends Component
         $invoiceAopHeader = DB::table('invoice_aop_header')
             ->select(['*'])
             ->where('invoiceAop', 'like', '%' . $this->invoiceAop . '%')
+            ->when($this->tanggalJatuhTempo, function ($query) {
+                return $query->where('tanggalJatuhTempo', $this->tanggalJatuhTempo);
+            })
             ->orderBy('billingDocumentDate', 'asc')
             ->paginate(20);
-
+    
         return view('livewire.aop-upload', compact('invoiceAopHeader'));
     }
 }

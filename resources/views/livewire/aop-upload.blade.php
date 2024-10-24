@@ -87,8 +87,16 @@
                         </div>
                         <div class="card-body">
                             <div class="row mb-3" wire:loading.class="d-none" wire:target="save, gotoPage">
-                                <div class="col-md-6">
-                                    <input type="text" class="form-control" wire:model.live.debounce.1000ms="invoiceAop" placeholder="Invoice AOP" wire:loading.attr="disabled">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Invoice AOP</label>
+                                    <input type="text" class="form-control"
+                                        wire:model.live.debounce.1000ms="invoiceAop" placeholder="Invoice AOP"
+                                        wire:loading.attr="disabled">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Tanggal Jatuh Tempo</label>
+                                    <input type="date" class="form-control" wire:model.change="tanggalJatuhTempo"
+                                        wire:loading.attr="disabled">
                                 </div>
                             </div>
 
