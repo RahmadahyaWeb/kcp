@@ -149,8 +149,9 @@
                     </tbody>
                 </table>
             </div>
-
-            <div wire:loading.class="d-none" class="mt-6">
+        </div>
+        <div class="card-footer">
+            <div wire:loading.class="d-none">
                 {{ $items->links() }}
             </div>
         </div>
