@@ -9,5 +9,5 @@
 @endsection
 
 @section('content')
-    <livewire:aop-upload lazy />
+    <livewire:aop-upload />
 @endsection

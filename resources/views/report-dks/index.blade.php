@@ -3,5 +3,5 @@
 @section('title', 'DKS Scan')
 
 @section('content')
-    <livewire:report-dks-table lazy />
+    <livewire:report-dks-table />
 @endsection
