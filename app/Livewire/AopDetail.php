@@ -2,23 +2,13 @@
 
 namespace App\Livewire;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 class AopDetail extends Component
 {
-    public function placeholder()
-    {
-        return <<<'HTML'
-        <div class="d-flex justify-content-center align-items-center" style="height: 75vh;">
-            <div class="spinner-border" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        </div>
-        HTML;
-    }
-
     public $fakturPajak;
     public $editingFakturPajak;
 
@@ -107,6 +97,65 @@ class AopDetail extends Component
         session()->flash('status', "Flag $invoiceAop berhasil disimpan!");
 
         $this->redirect('/aop-upload');
+    }
+
+    public function sendToBosnet($invoiceAop)
+    {
+        dd($this->sendToBosnetAPI($invoiceAop));
+    }
+
+    public function sendToBosnetAPI($invoiceAop)
+    {
+        $invoiceHeader = DB::table('invoice_aop_header')
+            ->select(['*'])
+            ->where('invoiceAop', $invoiceAop)
+            ->first();
+
+        $invoiceDetails = DB::table('invoice_aop_detail')
+            ->select(['*'])
+            ->where('invoiceAop', $invoiceAop)
+            ->get();
+
+        // ITEMS
+        $items = [];
+        foreach ($invoiceDetails as $value) {
+            $item = [];
+            $item['szProductId']           = $value->materialNumber;
+            $item['decQty']                = $value->qty;
+            $item['szUomId']               = "";
+            $item['decPrize']              = $value->price;
+            $item['decDiscount']           = $value->extraPlafonDiscount;
+            $item['purchaseITemTypeId']    = "BELI";
+
+            $items[] = $item;
+        }
+
+        // PAYMENT TERM ID
+        $billingDate = Carbon::parse($invoiceHeader->billingDocumentDate);
+        $dueDate = Carbon::parse($invoiceHeader->tanggalJatuhTempo);
+
+        $paymentTermId = $billingDate->diffInDays($dueDate);
+
+        return [
+            'szFpoId'                   => $invoiceHeader->invoiceAop,
+            'dtmPO'                     => date('Y-m-d H:i:s', strtotime($invoiceHeader->billingDocumentDate)),
+            'dtmReceipt'                => "",
+            'bReturn'                   => 0,
+            'szRefDn'                   => $invoiceHeader->SPB,
+            'szWarehouseId'             => "",
+            'szStockTypeId'             => "Good Stock",
+            'szSupplierId'              => "",
+            'paymentTermId'             => $paymentTermId . " HARI",
+            'szPOReceiptIdForReturn'    => "",
+            'szWorkplaceId'             => "",
+            'szCarrierId'               => "",
+            'szVehicleId'               => "",
+            'szDriverId'                => "",
+            'szVehicleNumber'           => "",
+            'szDriverNm'                => "",
+            'szDescription'             => "",
+            'items'                     => $items
+        ];
     }
 
     public $invoiceAop;

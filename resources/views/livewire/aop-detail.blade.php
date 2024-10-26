@@ -103,17 +103,21 @@
                                 </div>
                                 <div class="col col-auto">
                                     <div>
-                                        @if ($header->fakturPajak != null)
+                                        @if ($header->fakturPajak != null && $header->flag_selesai == 'N')
                                             <div class="d-inline text-primary" style="cursor: pointer"
                                                 data-bs-toggle="modal" data-bs-target="#editFakturPajakModal"
                                                 wire:click="openModal">
                                                 {{ $header->fakturPajak }}
                                             </div>
-                                        @else
+                                        @elseif ($header->flag_selesai == 'N')
                                             <div class="d-inline text-primary" style="cursor: pointer"
                                                 data-bs-toggle="modal" data-bs-target="#editFakturPajakModal"
                                                 wire:click="openModal">
                                                 Belum ada
+                                            </div>
+                                        @else
+                                            <div class="d-inline text-secondary" style="cursor: not-allowed">
+                                                {{ $header->fakturPajak ?? 'Belum ada' }}
                                             </div>
                                         @endif
                                     </div>
@@ -200,7 +204,19 @@
                             </div>
                         </div>
                     </div>
-                    @if ($header->fakturPajak)
+                    @if ($header->fakturPajak && $header->flag_selesai == 'Y')
+                        <div class="row">
+                            <form wire:submit="sendToBosnet({{ $header->invoiceAop }})">
+                                <div class="col d-grid">
+                                    <hr>
+                                    <button type="submit" class="btn btn-warning">
+                                        <span wire:loading.remove wire:target="updateFlag">Kirim ke Bosnet</span>
+                                        <span wire:loading wire:target="updateFlag">Loading...</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    @elseif($header->fakturPajak && $header->flag_selesai == 'N')
                         <div class="row">
                             <form wire:submit="updateFlag({{ $header->invoiceAop }})">
                                 <div class="col d-grid">
@@ -218,65 +234,68 @@
         </div>
 
         {{-- CARD EXTRA PLAFON DISCOUNT  --}}
-        <div class="col-12 mb-3">
-            <div class="card">
-                <div class="card-header">
-                    <div class="row align-items-center">
-                        <div class="col">
-                            Extra Plafon Discount (Disc Program)
+        @if ($header->flag_selesai == 'N')
+            <div class="col-12 mb-3">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                Extra Plafon Discount (Disc Program)
+                            </div>
+                            <div class="col d-flex justify-content-end">
+                                <button data-bs-toggle="modal" data-bs-target="#createProgramModal"
+                                    class="btn btn-primary">
+                                    Tambah Program
+                                </button>
+                            </div>
                         </div>
-                        <div class="col d-flex justify-content-end">
-                            <button data-bs-toggle="modal" data-bs-target="#createProgramModal" class="btn btn-primary">
-                                Tambah Program
-                            </button>
-                        </div>
+                        <hr>
                     </div>
-                    <hr>
-                </div>
-                <div class="card-body">
-                    @if ($programAop->isEmpty())
-                        <table class="table table-bordered table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Discount (Rp)</th>
-                                    <th>Keterangan</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="text-center" colspan="3">No Data</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    @else
-                        <table class="table table-bordered table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Discount (Rp)</th>
-                                    <th>Keterangan</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($programAop as $item)
+                    <div class="card-body">
+                        @if ($programAop->isEmpty())
+                            <table class="table table-bordered table-hover">
+                                <thead>
                                     <tr>
-                                        <td>{{ number_format($item->potonganProgram, 0, ',', '.') }}</td>
-                                        <td>{{ $item->keteranganProgram }}</td>
-                                        <td>
-                                            <button class="btn btn-danger btn-sm"
-                                                wire:click="destroyProgram({{ $item->id }})">
-                                                Hapus
-                                            </button>
-                                        </td>
+                                        <th>Discount (Rp)</th>
+                                        <th>Keterangan</th>
+                                        <th></th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    @endif
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center" colspan="3">No Data</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        @else
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Discount (Rp)</th>
+                                        <th>Keterangan</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($programAop as $item)
+                                        <tr>
+                                            <td>{{ number_format($item->potonganProgram, 0, ',', '.') }}</td>
+                                            <td>{{ $item->keteranganProgram }}</td>
+                                            <td>
+                                                <button class="btn btn-danger btn-sm"
+                                                    wire:click="destroyProgram({{ $item->id }})">
+                                                    Hapus
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @endif
+                    </div>
                 </div>
             </div>
-        </div>
+        @endif
 
         {{-- CARD DETAIL PART --}}
         <div class="col-12 mb-3">
@@ -327,8 +346,8 @@
 
         {{-- MODAL EDIT FAKTUR PAJAK --}}
         <div class="modal fade {{ $class }}" id="editFakturPajakModal" tabindex="-1"
-            aria-labelledby="editFakturPajakModalLabel" aria-hidden="true" style="{{ $style }}"
-            data-bs-backdrop="static" data-bs-keyboard="false">
+            aria-labelledby="editFakturPajakModalLabel" style="{{ $style }}" data-bs-backdrop="static"
+            data-bs-keyboard="false">
             <div class="modal-dialog modal-dialog-centered modal-sm">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -352,8 +371,8 @@
 
         {{-- MODAL Tambah Program --}}
         <div class="modal fade {{ $class }}" id="createProgramModal" tabindex="-1"
-            aria-labelledby="createProgramModalLabel" aria-hidden="true" style="{{ $style }}"
-            data-bs-backdrop="static" data-bs-keyboard="false">
+            aria-labelledby="createProgramModalLabel" style="{{ $style }}" data-bs-backdrop="static"
+            data-bs-keyboard="false">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
