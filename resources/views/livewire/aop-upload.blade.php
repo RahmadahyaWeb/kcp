@@ -115,26 +115,15 @@
                                 <div wire:loading.class="d-none"
                                     wire:target="save, gotoPage, invoiceAop, tanggalJatuhTempo"
                                     class="table-responsive">
-                                    <table class="table table-bordered table-hover">
+                                    <table class="table table-hover">
                                         <thead>
                                             <tr>
                                                 <th>Invoice AOP</th>
-                                                <th>Customer To</th>
-                                                <th>Billing Document Date</th>
-                                                <th>Tgl. Jatuh Tempo</th>
-                                                <th>Harga (Rp)</th>
-                                                <th>Add Discount (Rp)</th>
-                                                <th>Amount (Rp)</th>
-                                                <th>Cash Discount (Rp)</th>
-                                                <th>Extra Plafon Discount (Rp)</th>
-                                                <th>Net Sales (Rp)</th>
-                                                <th>Tax (Rp)</th>
-                                                <th>Grand Total (Rp)</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td class="text-center" colspan="12">No Data</td>
+                                                <td class="text-center">No Data</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -143,7 +132,7 @@
                                 <div wire:loading.class="d-none"
                                     wire:target="save, gotoPage, invoiceAop, tanggalJatuhTempo"
                                     class="table-responsive">
-                                    <table class="table table-bordered table-hover">
+                                    <table class="table table-hover">
                                         <thead>
                                             <tr>
                                                 <th>Invoice AOP</th>
