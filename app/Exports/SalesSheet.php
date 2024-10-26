@@ -288,6 +288,7 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
             '6D',
             '6F',
             '6H',
+            'TX'
         ];
 
         if (in_array($row->kd_toko, $tokoAbsen)) {
