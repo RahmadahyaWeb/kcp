@@ -21,50 +21,29 @@
             </div>
 
             @if ($invoiceAopHeader->isEmpty())
-                <div wire:loading.class="d-none" wire:target="save, gotoPage, invoiceAop"
-                    class="table-responsive">
+                <div wire:loading.class="d-none" wire:target="save, gotoPage, invoiceAop" class="table-responsive">
                     <table class="table table-hover">
                         <thead>
                             <tr>
                                 <th>Invoice AOP</th>
-                                <th>Customer To</th>
-                                <th>Billing Document Date</th>
-                                <th>Tgl. Jatuh Tempo</th>
-                                <th>Harga (Rp)</th>
-                                <th>Add Discount (Rp)</th>
-                                <th>Amount (Rp)</th>
-                                <th>Cash Discount (Rp)</th>
-                                <th>Extra Plafon Discount (Rp)</th>
-                                <th>Net Sales (Rp)</th>
-                                <th>Tax (Rp)</th>
-                                <th>Grand Total (Rp)</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="text-center" colspan="12">No Data</td>
+                                <td class="text-center" colspan="2">No Data</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             @else
-                <div wire:loading.class="d-none" wire:target="save, gotoPage, invoiceAop"
-                    class="table-responsive">
+                <div wire:loading.class="d-none" wire:target="save, gotoPage, invoiceAop" class="table-responsive">
                     <table class="table table-hover">
                         <thead>
                             <tr>
                                 <th>Invoice AOP</th>
-                                <th>Customer To</th>
-                                <th>Billing Document Date</th>
-                                <th>Tgl. Jatuh Tempo</th>
-                                <th>Harga (Rp)</th>
-                                <th>Add Discount (Rp)</th>
-                                <th>Amount (Rp)</th>
-                                <th>Cash Discount (Rp)</th>
-                                <th>Extra Plafon Discount (Rp)</th>
-                                <th>Net Sales (Rp)</th>
-                                <th>Tax (Rp)</th>
-                                <th>Grand Total (Rp)</th>
+                                <th>Status</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -75,23 +54,17 @@
                                             {{ $invoice->invoiceAop }}
                                         </a>
                                     </td>
-                                    <td>{{ $invoice->customerTo }}</td>
-                                    <td>{{ date('d-m-Y', strtotime($invoice->billingDocumentDate)) }}
+                                    <td>
+                                        @if ($invoice->flag_selesai == 'Y')
+                                            <span class="badge text-bg-success">Ready to be sent</span>
+                                        @endif
                                     </td>
-                                    <td>{{ date('d-m-Y', strtotime($invoice->tanggalJatuhTempo)) }}
-                                    </td>
-                                    <td>{{ number_format($invoice->price, 0, ',', '.') }}</td>
-                                    <td>{{ number_format($invoice->addDiscount, 0, ',', '.') }}
-                                    </td>
-                                    <td>{{ number_format($invoice->amount, 0, ',', '.') }}</td>
-                                    <td>{{ number_format($invoice->cashDiscount, 0, ',', '.') }}
-                                    </td>
-                                    <td>{{ number_format($invoice->extraPlafonDiscount, 0, ',', '.') }}
-                                    </td>
-                                    <td>{{ number_format($invoice->netSales, 0, ',', '.') }}
-                                    </td>
-                                    <td>{{ number_format($invoice->tax, 0, ',', '.') }}</td>
-                                    <td>{{ number_format($invoice->grandTotal, 0, ',', '.') }}
+                                    <td>
+                                        <button wire:click="cancel({{ $invoice->invoiceAop }})"
+                                            wire:confirm="Yakin ingin batal invoice?" type="submit"
+                                            class="btn btn-sm btn-danger">
+                                            Batal
+                                        </button>
                                     </td>
                                 </tr>
                             @endforeach

@@ -20,6 +20,11 @@ class AopFinal extends Component
         $this->resetPage();
     }
 
+    public function cancel($invoiceAop)
+    {
+        dd($invoiceAop);
+    }
+
     public function render()
     {
         $invoiceAopHeader = DB::table('invoice_aop_header')

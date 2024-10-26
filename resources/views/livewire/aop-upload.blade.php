@@ -59,10 +59,10 @@
                                 </div>
                             </div>
                             <div class="col-md-12 d-flex justify-content-end">
-                                <button type="submit" class="btn btn-primary" wire:loading.attr="disabled"
+                                <button type="submit" class="btn btn-success" wire:loading.attr="disabled"
                                     wire:target="rekap_tagihan, surat_tagihan">
                                     <span wire:loading.remove wire:target="save">Upload</span>
-                                    <span wire:loading wire:target="save">Upploading...</span>
+                                    <span wire:loading wire:target="save">Uploading...</span>
                                 </button>
                             </div>
                         </div>
@@ -87,7 +87,7 @@
                         <div class="card-body">
                             <div class="row mb-3">
                                 <div class="col d-flex justify-content-end">
-                                    <a href="{{ route('aop-upload.final') }}" class="btn btn-primary">Data AOP Final</a>
+                                    <a href="{{ route('aop-upload.final') }}" class="btn btn-warning">Data AOP Final</a>
                                 </div>
                             </div>
                             <div class="row mb-3" wire:loading.class="d-none" wire:target="save, gotoPage">
