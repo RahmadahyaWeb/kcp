@@ -36,6 +36,6 @@ class NonAopController extends Controller
     {
         $this->guard();
 
-        return $invoiceNon;
+        return view('NON-AOP.detail', compact('invoiceNon'));
     }
 }

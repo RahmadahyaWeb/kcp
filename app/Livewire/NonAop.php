@@ -25,6 +25,11 @@ class NonAop extends Component
         session()->flash('status', "Invoice: $invoiceNon berhasil dihapus.");
     }
 
+    public function detailInvoiceNon($invoiceNon)
+    {
+        $this->redirect("/non-aop/detail/$invoiceNon");
+    }
+
     public function render()
     {
         $invoiceNonAopHeader = DB::table('invoice_non_header')

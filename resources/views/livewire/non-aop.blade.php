@@ -60,7 +60,8 @@
                             </table>
                         </div>
                     @else
-                        <div class="table-responsive" wire:loading.class="d-none" wire:target="gotoPage, invoiceNon, tanggalJatuhTempo">
+                        <div class="table-responsive" wire:loading.class="d-none"
+                            wire:target="gotoPage, invoiceNon, tanggalJatuhTempo">
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
@@ -82,14 +83,13 @@
                                             <td>{{ $value->amount }}</td>
                                             <td>
                                                 <div class="d-flex gap-2">
-                                                    <span class="text-primary" style="cursor: pointer">
-                                                        <i class='bx bxs-detail'></i>
-                                                    </span>
+                                                    <span class="badge text-bg-primary" style="cursor: pointer"
+                                                        wire:click="detailInvoiceNon('{{ $value->invoiceNon }}')">Detail</span>
                                                     <span wire:click="hapusInvoiceNon('{{ $value->invoiceNon }}')"
-                                                        class="text-danger"
+                                                        class="badge text-bg-danger"
                                                         wire:confirm="Yakin ingin hapus invoice: {{ $value->invoiceNon }}?"
                                                         style="cursor: pointer">
-                                                        <i class='bx bxs-trash'></i>
+                                                        Hapus
                                                     </span>
                                                 </div>
                                             </td>
@@ -100,7 +100,8 @@
                         </div>
                     @endif
                 </div>
-                <div class="card-footer" wire:loading.class="d-none" wire:target="gotoPage, invoiceNon, tanggalJatuhTempo">
+                <div class="card-footer" wire:loading.class="d-none"
+                    wire:target="gotoPage, invoiceNon, tanggalJatuhTempo">
                     {{ $invoiceNonAopHeader->links() }}
                 </div>
             </div>
