@@ -211,8 +211,8 @@
                                 <div class="col d-grid">
                                     <hr>
                                     <button type="submit" class="btn btn-warning">
-                                        <span wire:loading.remove wire:target="updateFlag">Kirim ke Bosnet</span>
-                                        <span wire:loading wire:target="updateFlag">Loading...</span>
+                                        <span wire:loading.remove wire:target="sendToBosnet">Kirim ke Bosnet</span>
+                                        <span wire:loading wire:target="sendToBosnet">Loading...</span>
                                     </button>
                                 </div>
                             </form>
