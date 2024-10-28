@@ -33,7 +33,7 @@ class CreateNonAop extends Component
                 ->orderBy('created_at', 'desc')
                 ->first();
 
-            $now = date('Ymd');
+            $now = date('Ym');
 
 
             if (isset($lastInvoice->invoiceNon)) {
