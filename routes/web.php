@@ -49,7 +49,6 @@ Route::middleware(['auth', 'check.online', 'auth.session'])->group(function () {
 
     // AOP UPLOAD FILE
     Route::get('/aop', [AopController::class, 'indexUpload'])->name('aop.index');
-    Route::post('/aop/store', [AopController::class, 'store'])->name('aop.store');
 
     // AOP DETAIL
     Route::get('/aop/detail/{invoiceAop}', [AopController::class, 'detail'])->name('aop.detail');
@@ -58,6 +57,20 @@ Route::middleware(['auth', 'check.online', 'auth.session'])->group(function () {
     Route::get('/aop/final', function () {
         return view('AOP.final');
     })->name('aop.final');
+
+    // NON AOP
+    Route::get('/non-aop', function () {
+        return view('NON-AOP.index');
+    })->name('non-aop.index');
+
+    // CREATE NON AOP
+    Route::get('/non-aop/create', function () {
+        return view('NON-AOP.create');
+    })->name('non-aop.create');
+
+    Route::get('/non-aop/detail/{invoiceNon}', function($invoice){
+        return $invoice;
+    })->name('non-aop.detail');
 
     // LOGOUT
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');

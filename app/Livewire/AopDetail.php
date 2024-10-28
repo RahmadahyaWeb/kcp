@@ -95,9 +95,9 @@ class AopDetail extends Component
                 'updated_at'    => now()
             ]);
 
-        session()->flash('status', "Flag $invoiceAop berhasil disimpan. Silakan periksa data di list Data AOP Final!");
+        session()->flash('status', "Flag $invoiceAop berhasil disimpan. Silakan periksa data di list Data AOP Final.");
 
-        $this->redirect('/aop-upload');
+        $this->redirect('/aop');
     }
 
     public function sendToBosnet($invoiceAop)
@@ -112,7 +112,7 @@ class AopDetail extends Component
 
             session()->flash('status', "Data invoice: $invoiceAop berhasil dikirim!");
 
-            $this->redirect('/aop-upload/final');
+            $this->redirect('/aop/final');
         }
     }
 

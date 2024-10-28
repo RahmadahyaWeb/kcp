@@ -299,17 +299,6 @@ class AopUpload extends Component
         return true;
     }
 
-    public function placeholder()
-    {
-        return <<<'HTML'
-        <div class="d-flex justify-content-center align-items-center" style="height: 75vh;">
-            <div class="spinner-border" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        </div>
-        HTML;
-    }
-
     public $selectedInvoices = [];
     public function processSelected()
     {

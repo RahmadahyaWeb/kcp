@@ -28,6 +28,8 @@ class AopFinal extends Component
             ->update([
                 'flag_selesai' => 'N',
             ]);
+            
+        session()->flash('status', "Invoice: $invoiceAop berhasil dibatalkan. Silakan periksa data di list Data Upload AOP.");
     }
 
     public function render()

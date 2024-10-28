@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Upload File AOP')
+@section('title', 'Data AOP')
 
 @section('breadcrumb')
     <ol class="breadcrumb">
