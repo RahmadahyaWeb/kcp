@@ -64,12 +64,42 @@
         </div>
     </div>
 
+    <div class="modal fade" id="tqModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="tqModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="tqModalLabel">Pilih Tempat</h1>
+                </div>
+                <div class="modal-body">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="Tq" id="TQ">
+                        <label class="form-check-label" for="TQ">
+                            Sinar Taqwa Motor 1
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="Tq" id="TQ2" checked>
+                        <label class="form-check-label" for="TQ2">
+                            Sinar Taqwa Motor 2
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="confirmSelection">Konfirmasi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @push('scripts')
         <script>
             const html5QrCode = new Html5Qrcode("reader");
             let scanning = false;
 
             document.getElementById("start-button").addEventListener("click", () => {
+                document.getElementById("start-button").setAttribute('disabled', 'true');
+
                 function getQrBoxSize() {
                     const width = window.innerWidth;
                     const height = window.innerHeight;
@@ -97,9 +127,23 @@
                             document.getElementById("stop-button").classList.add('d-none');
 
                             html5QrCode.stop().then(() => {
-                                window.location.href = redirectUrl;
-                            });
+                                if (kd_toko == 'TQ') {
+                                    $('#modalScan').modal('hide');
+                                    $('#tqModal').modal('show');
 
+                                    document.getElementById('confirmSelection').onclick = () => {
+                                        const selectedOption = document.querySelector(
+                                            'input[name="Tq"]:checked').id;
+
+                                        $('#tqModal').modal('hide');
+
+                                        window.location.href =
+                                            `/dks-scan/${btoa(selectedOption)}`;
+                                    };
+                                } else {
+                                    window.location.href = redirectUrl;
+                                }
+                            });
                         };
 
                         html5QrCode.start({
@@ -109,6 +153,7 @@
                             }
                         }, config, qrCodeSuccessCallback).then(() => {
                             scanning = true;
+                            document.getElementById("start-button").removeAttribute('disabled');
                             document.getElementById("start-button").classList.add('d-none');
                             document.getElementById("stop-button").classList.remove('d-none');
                             document.getElementById("placeholder").classList.add('d-none');
