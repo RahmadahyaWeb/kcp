@@ -219,7 +219,8 @@
                         </div>
                     @elseif($header->fakturPajak && $header->flag_selesai == 'N' && $header->status == 'KCP')
                         <div class="row">
-                            <form wire:submit="updateFlag({{ $header->invoiceAop }})">
+                            <form wire:submit="updateFlag({{ $header->invoiceAop }})"
+                                wire:confirm="Yakin ingin update flag?">
                                 <div class="col d-grid">
                                     <hr>
                                     <button type="submit" class="btn btn-success">
