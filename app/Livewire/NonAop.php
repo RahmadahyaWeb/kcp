@@ -13,6 +13,9 @@ class NonAop extends Component
 
     protected $paginationTheme = 'bootstrap';
 
+    public $invoiceNon;
+    public $tanggalJatuhTempo;
+
     public function hapusInvoiceNon($invoiceNon)
     {
         DB::table('invoice_non_header')
@@ -26,6 +29,11 @@ class NonAop extends Component
     {
         $invoiceNonAopHeader = DB::table('invoice_non_header')
             ->select(['*'])
+            ->where('flag_selesai', '!=', 'Y')
+            ->where('invoiceNon', 'like', '%' . $this->invoiceNon . '%')
+            ->when($this->tanggalJatuhTempo, function ($query) {
+                return $query->where('tanggalJatuhTempo', $this->tanggalJatuhTempo);
+            })
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
