@@ -204,9 +204,10 @@
                             </div>
                         </div>
                     </div>
-                    @if ($header->fakturPajak && $header->flag_selesai == 'Y')
+                    @if ($header->fakturPajak && $header->flag_selesai == 'Y' && $header->status == 'KCP')
                         <div class="row">
-                            <form wire:submit="sendToBosnet({{ $header->invoiceAop }})">
+                            <form wire:submit="sendToBosnet({{ $header->invoiceAop }})"
+                                wire:confirm="Yakin ingin kirim data ke Bosnet?">
                                 <div class="col d-grid">
                                     <hr>
                                     <button type="submit" class="btn btn-warning">
@@ -216,7 +217,7 @@
                                 </div>
                             </form>
                         </div>
-                    @elseif($header->fakturPajak && $header->flag_selesai == 'N')
+                    @elseif($header->fakturPajak && $header->flag_selesai == 'N' && $header->status == 'KCP')
                         <div class="row">
                             <form wire:submit="updateFlag({{ $header->invoiceAop }})">
                                 <div class="col d-grid">

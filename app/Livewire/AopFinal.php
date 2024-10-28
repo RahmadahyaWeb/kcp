@@ -14,6 +14,7 @@ class AopFinal extends Component
     protected $paginationTheme = 'bootstrap';
 
     public $invoiceAop;
+    public $status;
 
     public function search()
     {
@@ -22,17 +23,25 @@ class AopFinal extends Component
 
     public function cancel($invoiceAop)
     {
-        dd($invoiceAop);
+        DB::table('invoice_aop_header')
+            ->where('invoiceAop', $invoiceAop)
+            ->update([
+                'flag_selesai' => 'N',
+            ]);
     }
 
     public function render()
     {
-        $invoiceAopHeader = DB::table('invoice_aop_header')
+        $query = DB::table('invoice_aop_header')
             ->select(['*'])
             ->where('invoiceAop', 'like', '%' . $this->invoiceAop . '%')
-            ->where('flag_selesai', '!=', 'N')
-            ->orderBy('billingDocumentDate', 'asc')
-            ->paginate(20);
+            ->where('flag_selesai', '!=', 'N');
+
+        if (!empty($this->status)) {
+            $query->where('status', $this->status);
+        }
+
+        $invoiceAopHeader = $query->orderBy('updated_at', 'desc')->paginate(20);
 
         return view('livewire.aop-final', compact('invoiceAopHeader'));
     }

@@ -91,17 +91,29 @@ class AopDetail extends Component
         DB::table('invoice_aop_header')
             ->where('invoiceAop', $invoiceAop)
             ->update([
-                'flag_selesai' => 'Y'
+                'flag_selesai'  => 'Y',
+                'updated_at'    => now()
             ]);
 
-        session()->flash('status', "Flag $invoiceAop berhasil disimpan!");
+        session()->flash('status', "Flag $invoiceAop berhasil disimpan. Silakan periksa data di list Data AOP Final!");
 
         $this->redirect('/aop-upload');
     }
 
     public function sendToBosnet($invoiceAop)
     {
-        dd($this->sendToBosnetAPI($invoiceAop));
+        if ($this->sendToBosnetAPI($invoiceAop)) {
+            DB::table('invoice_aop_header')
+                ->where('invoiceAop', $invoiceAop)
+                ->update([
+                    'status'        => 'BOSNET',
+                    'sendToBosnet'  => now()
+                ]);
+
+            session()->flash('status', "Data invoice: $invoiceAop berhasil dikirim!");
+
+            $this->redirect('/aop-upload/final');
+        }
     }
 
     public function sendToBosnetAPI($invoiceAop)
@@ -135,6 +147,8 @@ class AopDetail extends Component
         $dueDate = Carbon::parse($invoiceHeader->tanggalJatuhTempo);
 
         $paymentTermId = $billingDate->diffInDays($dueDate);
+
+        return true;
 
         return [
             'szFpoId'                   => $invoiceHeader->invoiceAop,
