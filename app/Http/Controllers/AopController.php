@@ -24,14 +24,14 @@ class AopController extends Controller
     {
         $this->guard();
 
-        return view('uploadAOP.index');
+        return view('AOP.index');
     }
 
     public function detail($invoiceAop)
     {
         $this->guard();
 
-        return view('uploadAOP.detail', compact('invoiceAop'));
+        return view('AOP.detail', compact('invoiceAop'));
     }
 
     public function store(Request $request)
