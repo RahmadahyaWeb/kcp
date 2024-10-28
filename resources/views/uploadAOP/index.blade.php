@@ -4,7 +4,7 @@
 
 @section('breadcrumb')
     <ol class="breadcrumb">
-        <li class="breadcrumb-item active"><a href="{{ route('aop-upload.index') }}">Data Upload AOP</a></li>
+        <li class="breadcrumb-item active"><a href="{{ route('aop.index') }}">Data Upload AOP</a></li>
     </ol>
 @endsection
 

@@ -87,7 +87,7 @@
                         <div class="card-body">
                             <div class="row mb-3">
                                 <div class="col d-flex justify-content-end">
-                                    <a href="{{ route('aop-upload.final') }}" class="btn btn-warning">Data AOP Final</a>
+                                    <a href="{{ route('aop.final') }}" class="btn btn-warning">Data AOP Final</a>
                                 </div>
                             </div>
                             <div class="row mb-3" wire:loading.class="d-none" wire:target="save, gotoPage">
@@ -154,7 +154,7 @@
                                                 <tr>
                                                     <td>
                                                         <a
-                                                            href="{{ route('aop-upload.detail', $invoice->invoiceAop) }}">
+                                                            href="{{ route('aop.detail', $invoice->invoiceAop) }}">
                                                             {{ $invoice->invoiceAop }}
                                                         </a>
                                                     </td>

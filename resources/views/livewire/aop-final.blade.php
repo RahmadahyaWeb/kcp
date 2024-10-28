@@ -64,7 +64,7 @@
                             @foreach ($invoiceAopHeader as $invoice)
                                 <tr>
                                     <td>
-                                        <a href="{{ route('aop-upload.detail', $invoice->invoiceAop) }}">
+                                        <a href="{{ route('aop.detail', $invoice->invoiceAop) }}">
                                             {{ $invoice->invoiceAop }}
                                         </a>
                                     </td>

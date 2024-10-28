@@ -48,16 +48,16 @@ Route::middleware(['auth', 'check.online', 'auth.session'])->group(function () {
     Route::delete('master-toko/destroy/{kd_toko}', [MasterTokoController::class, 'destroy'])->name('master-toko.destroy');
 
     // AOP UPLOAD FILE
-    Route::get('/aop-upload', [AopController::class, 'indexUpload'])->name('aop-upload.index');
-    Route::post('/aop-upload/store', [AopController::class, 'store'])->name('aop-upload.store');
+    Route::get('/aop', [AopController::class, 'indexUpload'])->name('aop.index');
+    Route::post('/aop/store', [AopController::class, 'store'])->name('aop.store');
 
     // AOP DETAIL
-    Route::get('/aop-upload/detail/{invoiceAop}', [AopController::class, 'detail'])->name('aop-upload.detail');
+    Route::get('/aop/detail/{invoiceAop}', [AopController::class, 'detail'])->name('aop.detail');
 
     // AOP Final
-    Route::get('/aop-upload/final', function () {
+    Route::get('/aop/final', function () {
         return view('uploadAOP.final');
-    })->name('aop-upload.final');
+    })->name('aop.final');
 
     // LOGOUT
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
