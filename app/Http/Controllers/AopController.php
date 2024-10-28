@@ -34,6 +34,13 @@ class AopController extends Controller
         return view('AOP.detail', compact('invoiceAop'));
     }
 
+    public function final()
+    {
+        $this->guard();
+
+        return view('AOP.final');
+    }
+
     public function store(Request $request)
     {
         $request->validate([

@@ -4,6 +4,7 @@ use App\Http\Controllers\AopController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DksController;
 use App\Http\Controllers\MasterTokoController;
+use App\Http\Controllers\NonAopController;
 use App\Http\Controllers\ReportDKSController;
 use Illuminate\Support\Facades\Route;
 
@@ -54,23 +55,16 @@ Route::middleware(['auth', 'check.online', 'auth.session'])->group(function () {
     Route::get('/aop/detail/{invoiceAop}', [AopController::class, 'detail'])->name('aop.detail');
 
     // AOP Final
-    Route::get('/aop/final', function () {
-        return view('AOP.final');
-    })->name('aop.final');
+    Route::get('/aop/final', [AopController::class, 'final'])->name('aop.final');
 
     // NON AOP
-    Route::get('/non-aop', function () {
-        return view('NON-AOP.index');
-    })->name('non-aop.index');
+    Route::get('/non-aop', [NonAopController::class, 'index'])->name('non-aop.index');
 
     // CREATE NON AOP
-    Route::get('/non-aop/create', function () {
-        return view('NON-AOP.create');
-    })->name('non-aop.create');
+    Route::get('/non-aop/create', [NonAopController::class, 'create'])->name('non-aop.create');
 
-    Route::get('/non-aop/detail/{invoiceNon}', function($invoice){
-        return $invoice;
-    })->name('non-aop.detail');
+    // DETAIL NON AOP
+    Route::get('/non-aop/detail/{invoiceNon}', [NonAopController::class, 'detail'])->name('non-aop.detail');
 
     // LOGOUT
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
