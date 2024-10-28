@@ -56,7 +56,7 @@ Route::middleware(['auth', 'check.online', 'auth.session'])->group(function () {
 
     // AOP Final
     Route::get('/aop/final', function () {
-        return view('uploadAOP.final');
+        return view('AOP.final');
     })->name('aop.final');
 
     // LOGOUT
