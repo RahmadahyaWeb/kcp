@@ -72,89 +72,119 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="col-12 mb-3">
-            <div class="card">
-                <div class="card-header">
-                    <b>Form Tambah Item</b>
-                    <hr>
-                </div>
-                <div class="card-body">
-                    <form wire:submit="addItem">
+                    @if (!$details->isEmpty() && $header->flag_selesai == 'N')
                         <div class="row">
-                            <div class="col-12 mb-3">
-                                <label class="form-label">No Part | Nama Part</label>
-                                <input type="text" class="form-control mb-2" wire:model.live="search"
-                                    placeholder="Cari Part">
-                                <select class="form-select @error('materialNumber') is-invalid @enderror"
-                                    wire:model.live ="materialNumber">
-                                    <option value="" selected>Pilih Part</option>
-                                    @foreach ($nonAopParts as $part)
-                                        <option value="{{ $part['part_no'] }}">{{ $part['txt'] }}</option>
-                                    @endforeach
-                                </select>
-
-                                @error('materialNumber')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Harga</label>
-                                <input type="number" class="form-control @error('price') is-invalid @enderror"
-                                    wire:model.live="price">
-
-                                @error('price')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">QTY</label>
-                                <input type="number" class="form-control @error('qty') is-invalid @enderror"
-                                    wire:model.live="qty">
-
-                                @error('qty')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Total (Harga * Qty)</label>
-                                <input type="number" class="form-control" wire:model.live="total" disabled>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Total Nota Fisik</label>
-                                <input type="number" class="form-control @error('totalFisik') is-invalid @enderror"
-                                    wire:model.live="totalFisik">
-
-                                @error('totalFisik')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Discount</label>
-                                <input type="number" class="form-control" wire:model.live="extraPlafonDiscount" disabled>
-                            </div>
-                            <div class="col-12 mb-3 d-grid">
-                                <button type="submit" class="btn btn-success">
-                                    <span wire:loading.remove wire:target="addItem">Tambah Item</span>
-                                    <span wire:loading wire:target="addItem">Loading...</span>
-                                </button>
-                            </div>
+                            <form wire:submit="updateFlag" wire:confirm="Yakin ingin update flag?">
+                                <div class="col d-grid">
+                                    <hr>
+                                    <button type="submit" class="btn btn-success">
+                                        <span wire:loading.remove wire:target="updateFlag">Selesai</span>
+                                        <span wire:loading wire:target="updateFlag">Loading...</span>
+                                    </button>
+                                </div>
+                            </form>
                         </div>
-                    </form>
+                    @elseif ($header->flag_selesai == 'Y' && $header->status == 'KCP')
+                        <div class="row">
+                            <form wire:submit="sendToBosnet"
+                                wire:confirm="Yakin ingin kirim data ke Bosnet?">
+                                <div class="col d-grid">
+                                    <hr>
+                                    <button type="submit" class="btn btn-warning">
+                                        <span wire:loading.remove wire:target="sendToBosnet">Kirim ke Bosnet</span>
+                                        <span wire:loading wire:target="sendToBosnet">Loading...</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
+
+        @if ($header->flag_selesai == 'N')
+            <div class="col-12 mb-3">
+                <div class="card">
+                    <div class="card-header">
+                        <b>Form Tambah Item</b>
+                        <hr>
+                    </div>
+                    <div class="card-body">
+                        <form wire:submit="addItem">
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <label class="form-label">No Part | Nama Part</label>
+                                    <input type="text" class="form-control mb-2" wire:model.live="search"
+                                        placeholder="Cari Part">
+                                    <select class="form-select @error('materialNumber') is-invalid @enderror"
+                                        wire:model.live ="materialNumber">
+                                        <option value="" selected>Pilih Part</option>
+                                        @foreach ($nonAopParts as $part)
+                                            <option value="{{ $part['part_no'] }}">{{ $part['txt'] }}</option>
+                                        @endforeach
+                                    </select>
+
+                                    @error('materialNumber')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Harga</label>
+                                    <input type="number" class="form-control @error('price') is-invalid @enderror"
+                                        wire:model.live="price">
+
+                                    @error('price')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">QTY</label>
+                                    <input type="number" class="form-control @error('qty') is-invalid @enderror"
+                                        wire:model.live="qty">
+
+                                    @error('qty')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Total (Harga * Qty)</label>
+                                    <input type="number" class="form-control" wire:model.live="total" disabled>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Total Nota Fisik</label>
+                                    <input type="number" class="form-control @error('totalFisik') is-invalid @enderror"
+                                        wire:model.live="totalFisik">
+
+                                    @error('totalFisik')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Discount</label>
+                                    <input type="number" class="form-control" wire:model.live="extraPlafonDiscount"
+                                        disabled>
+                                </div>
+                                <div class="col-12 mb-3 d-grid">
+                                    <button type="submit" class="btn btn-success">
+                                        <span wire:loading.remove wire:target="addItem">Tambah Item</span>
+                                        <span wire:loading wire:target="addItem">Loading...</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        @endif
 
         <div class="col-12 mb-3">
             <div class="card">
@@ -195,7 +225,9 @@
                                         <th>Harga (Rp)</th>
                                         <th>Discount (Rp)</th>
                                         <th>Amount (Rp)</th>
-                                        <th></th>
+                                        @if ($header->flag_selesai == 'N')
+                                            <th></th>
+                                        @endif
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -212,13 +244,16 @@
                                             <td>{{ number_format($item->price, 0, ',', '.') }}</td>
                                             <td>{{ number_format($item->extraPlafonDiscount, 0, ',', '.') }}</td>
                                             <td>{{ number_format($item->amount, 0, ',', '.') }}</td>
-                                            <td>
-                                                <button class="btn btn-danger btn-sm"
-                                                    wire:click="destroyItem({{ $item->id }})"
-                                                    wire:confirm="Yakin ingin hapus item?">
-                                                    Hapus
-                                                </button>
-                                            </td>
+
+                                            @if ($header->flag_selesai == 'N')
+                                                <td>
+                                                    <button class="btn btn-danger btn-sm"
+                                                        wire:click="destroyItem({{ $item->id }})"
+                                                        wire:confirm="Yakin ingin hapus item?">
+                                                        Hapus
+                                                    </button>
+                                                </td>
+                                            @endif
                                         </tr>
                                     @endforeach
                                     <tr>

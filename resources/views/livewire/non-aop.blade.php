@@ -30,13 +30,16 @@
                                 placeholder="Invoice Non" wire:loading.attr="disabled">
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Tanggal Jatuh Tempo</label>
-                            <input type="date" class="form-control" wire:model.change="tanggalJatuhTempo"
-                                wire:loading.attr="disabled">
+                            <label class="form-label">Status</label>
+                            <select wire:model.change="status" class="form-select">
+                                <option value="" selected>Pilih Status</option>
+                                <option value="KCP">KCP</option>
+                                <option value="BOSNET">BOSNET</option>
+                            </select>
                         </div>
                     </div>
 
-                    <div wire:loading.flex wire:target="gotoPage, invoiceNon, tanggalJatuhTempo"
+                    <div wire:loading.flex wire:target="gotoPage, invoiceNon, status"
                         class="text-center justify-content-center align-items-center" style="height: 200px;">
                         <div class="spinner-border" role="status">
                             <span class="visually-hidden">Loading...</span>
@@ -45,7 +48,7 @@
 
                     @if ($invoiceNonAopHeader->isEmpty())
                         <div class="table-responsive" wire:loading.class="d-none"
-                            wire:target="gotoPage, invoiceNon, tanggalJatuhTempo">
+                            wire:target="gotoPage, invoiceNon, status">
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
@@ -61,16 +64,16 @@
                         </div>
                     @else
                         <div class="table-responsive" wire:loading.class="d-none"
-                            wire:target="gotoPage, invoiceNon, tanggalJatuhTempo">
+                            wire:target="gotoPage, invoiceNon, status">
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
                                         <th>Invoice Non AOP</th>
                                         <th>Customer To</th>
                                         <th>Supplier</th>
-                                        <th>Tanggal Jatuh Tempo</th>
                                         <th>Total Harga</th>
                                         <th>Total Amount</th>
+                                        <th>Status</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -80,9 +83,16 @@
                                             <td>{{ $value->invoiceNon }}</td>
                                             <td>{{ $value->customerTo }}</td>
                                             <td>{{ $value->supplierCode }}</td>
-                                            <td>{{ date('d-m-Y', strtotime($value->tanggalJatuhTempo)) }}</td>
                                             <td>{{ number_format($value->price, 0, ',', '.') }}</td>
                                             <td>{{ number_format($value->amount, 0, ',', '.') }}</td>
+                                            <td>
+                                                @if ($value->flag_selesai == 'Y' && $value->status == 'KCP')
+                                                    <span class="badge text-bg-success">Siap dikirim</span>
+                                                @elseif ($value->flag_selesai == 'Y' && $value->status == 'BOSNET')
+                                                    <span class="badge text-bg-success">Berhasil dikirim pada
+                                                        {{ date('d-m-Y H:i:s', strtotime($value->sendToBosnet)) }}</span>
+                                                @endif
+                                            </td>
                                             <td>
                                                 <div class="d-flex gap-2">
                                                     <span class="badge text-bg-primary" style="cursor: pointer"
@@ -103,7 +113,7 @@
                     @endif
                 </div>
                 <div class="card-footer" wire:loading.class="d-none"
-                    wire:target="gotoPage, invoiceNon, tanggalJatuhTempo">
+                    wire:target="gotoPage, invoiceNon, status">
                     {{ $invoiceNonAopHeader->links() }}
                 </div>
             </div>

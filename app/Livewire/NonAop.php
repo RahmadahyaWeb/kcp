@@ -15,6 +15,7 @@ class NonAop extends Component
 
     public $invoiceNon;
     public $tanggalJatuhTempo;
+    public $status;
 
     public function hapusInvoiceNon($invoiceNon)
     {
@@ -36,15 +37,16 @@ class NonAop extends Component
 
     public function render()
     {
-        $invoiceNonAopHeader = DB::table('invoice_non_header')
+        $query = DB::table('invoice_non_header')
             ->select(['*'])
-            ->where('flag_selesai', '!=', 'Y')
-            ->where('invoiceNon', 'like', '%' . $this->invoiceNon . '%')
-            ->when($this->tanggalJatuhTempo, function ($query) {
-                return $query->where('tanggalJatuhTempo', $this->tanggalJatuhTempo);
-            })
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
+            ->where('invoiceNon', 'like', '%' . $this->invoiceNon . '%');
+
+
+        if (!empty($this->status)) {
+            $query->where('status', $this->status);
+        }
+
+        $invoiceNonAopHeader = $query->orderBy('created_at', 'desc')->paginate(20);
 
         return view('livewire.non-aop', compact('invoiceNonAopHeader'));
     }

@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\KcpInformation;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Validate;
@@ -116,6 +117,88 @@ class NonAopDetail extends Component
             ->delete();
 
         session()->flash('status', "Item berhasil berhasil dihapus.");
+    }
+
+    public function updateFlag()
+    {
+        DB::table('invoice_non_header')
+            ->where('invoiceNon', $this->invoiceNon)
+            ->update([
+                'flag_selesai'  => 'Y',
+                'updated_at'    => now()
+            ]);
+
+        session()->flash('status', "Flag $this->invoiceNon berhasil disimpan.");
+    }
+
+    public function sendToBosnet()
+    {
+        if ($this->sendToBosnetAPI()) {
+            DB::table('invoice_non_header')
+                ->where('invoiceNon', $this->invoiceNon)
+                ->update([
+                    'status'        => 'BOSNET',
+                    'sendToBosnet'  => now()
+                ]);
+
+            session()->flash('status', "Data invoice: $this->invoiceNon berhasil dikirim!");
+
+            $this->redirect('/non-aop');
+        }
+    }
+
+    public function sendToBosnetApi()
+    {
+        $invoiceHeader = DB::table('invoice_non_header')
+            ->select(['*'])
+            ->where('invoiceNon', $this->invoiceNon)
+            ->first();
+
+        $invoiceDetails = DB::table('invoice_non_detail')
+            ->select(['*'])
+            ->where('invoiceNon', $this->invoiceNon)
+            ->get();
+
+        // ITEMS
+        $items = [];
+        foreach ($invoiceDetails as $value) {
+            $item = [];
+            $item['szProductId']           = $value->materialNumber;
+            $item['decQty']                = $value->qty;
+            $item['szUomId']               = "";
+            $item['decPrize']              = $value->price;
+            $item['decDiscount']           = $value->extraPlafonDiscount;
+            $item['purchaseITemTypeId']    = "BELI";
+
+            $items[] = $item;
+        }
+
+        // PAYMENT TERM ID
+        $billingDate = Carbon::parse($invoiceHeader->billingDocumentDate);
+        $dueDate = Carbon::parse($invoiceHeader->tanggalJatuhTempo);
+
+        $paymentTermId = $billingDate->diffInDays($dueDate);
+
+        return [
+            'szFpoId'                   => $invoiceHeader->invoiceNon,
+            'dtmPO'                     => date('Y-m-d H:i:s', strtotime($invoiceHeader->billingDocumentDate)),
+            'dtmReceipt'                => "",
+            'bReturn'                   => 0,
+            'szRefDn'                   => $invoiceHeader->SPB,
+            'szWarehouseId'             => "",
+            'szStockTypeId'             => "Good Stock",
+            'szSupplierId'              => "",
+            'paymentTermId'             => $paymentTermId . " HARI",
+            'szPOReceiptIdForReturn'    => "",
+            'szWorkplaceId'             => "",
+            'szCarrierId'               => "",
+            'szVehicleId'               => "",
+            'szDriverId'                => "",
+            'szVehicleNumber'           => "",
+            'szDriverNm'                => "",
+            'szDescription'             => "",
+            'items'                     => $items
+        ];
     }
 
     public function mount($invoiceNon)
