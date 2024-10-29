@@ -91,6 +91,8 @@
                                                 @elseif ($value->flag_selesai == 'Y' && $value->status == 'BOSNET')
                                                     <span class="badge text-bg-success">Berhasil dikirim pada
                                                         {{ date('d-m-Y H:i:s', strtotime($value->sendToBosnet)) }}</span>
+                                                @else
+                                                    <span class="badge text-bg-danger">Belum siap dikirim</span>
                                                 @endif
                                             </td>
                                             <td>
@@ -112,8 +114,7 @@
                         </div>
                     @endif
                 </div>
-                <div class="card-footer" wire:loading.class="d-none"
-                    wire:target="gotoPage, invoiceNon, status">
+                <div class="card-footer" wire:loading.class="d-none" wire:target="gotoPage, invoiceNon, status">
                     {{ $invoiceNonAopHeader->links() }}
                 </div>
             </div>
