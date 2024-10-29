@@ -68,6 +68,7 @@
                                         <th>Invoice Non AOP</th>
                                         <th>Customer To</th>
                                         <th>Supplier</th>
+                                        <th>Tanggal Jatuh Tempo</th>
                                         <th>Total Harga</th>
                                         <th>Total Amount</th>
                                         <th>Action</th>
@@ -79,8 +80,9 @@
                                             <td>{{ $value->invoiceNon }}</td>
                                             <td>{{ $value->customerTo }}</td>
                                             <td>{{ $value->supplierCode }}</td>
-                                            <td>{{ $value->price }}</td>
-                                            <td>{{ $value->amount }}</td>
+                                            <td>{{ date('d-m-Y', strtotime($value->tanggalJatuhTempo)) }}</td>
+                                            <td>{{ number_format($value->price, 0, ',', '.') }}</td>
+                                            <td>{{ number_format($value->amount, 0, ',', '.') }}</td>
                                             <td>
                                                 <div class="d-flex gap-2">
                                                     <span class="badge text-bg-primary" style="cursor: pointer"

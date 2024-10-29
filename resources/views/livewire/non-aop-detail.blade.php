@@ -1,4 +1,10 @@
 <div>
+    @if (session('status'))
+        <div class="alert alert-primary alert-dismissible fade show" role="alert">
+            {{ session('status') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
     <div class="row">
         <div class="col-12 mb-3">
             <div class="card">
@@ -69,6 +75,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col-12 mb-3">
             <div class="card">
                 <div class="card-header">
@@ -123,13 +130,17 @@
                                 <input type="number" class="form-control" wire:model.live="extraPlafonDiscount">
                             </div>
                             <div class="col-12 mb-3 d-grid">
-                                <button type="submit" class="btn btn-success">Tambah Item</button>
+                                <button type="submit" class="btn btn-success">
+                                    <span wire:loading.remove wire:target="addItem">Tambah Item</span>
+                                    <span wire:loading wire:target="addItem">Loading...</span>
+                                </button>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
+
         <div class="col-12 mb-3">
             <div class="card">
                 <div class="card-header">
@@ -137,21 +148,71 @@
                     <hr>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>No Part | Nama Part</th>
-                                    <th>Qty</th>
-                                    <th>Harga</th>
-                                    <th>Discount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                
-                            </tbody>
-                        </table>
+                    <div wire:loading.flex wire:target="addItem, destroyItem"
+                        class="text-center justify-content-center align-items-center" style="height: 200px;">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
                     </div>
+
+                    @if ($details->isEmpty())
+                        <div class="table-responsive" wire:loading.class="d-none" wire:target="addItem, destroyItem">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>No Part | Nama Part</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center">No Data</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="table-responsive" wire:loading.class="d-none" wire:target="addItem, destroyItem">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>No Part | Nama Part</th>
+                                        <th>Qty</th>
+                                        <th>Harga (Rp)</th>
+                                        <th>Discount (Rp)</th>
+                                        <th>Amount (Rp)</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php
+                                        $grandTotal = 0;
+                                    @endphp
+                                    @foreach ($details as $item)
+                                        @php
+                                            $grandTotal += $item->amount;
+                                        @endphp
+                                        <tr>
+                                            <td>{{ $item->materialNumber }}</td>
+                                            <td>{{ $item->qty }}</td>
+                                            <td>{{ number_format($item->price, 0, ',', '.') }}</td>
+                                            <td>{{ number_format($item->extraPlafonDiscount, 0, ',', '.') }}</td>
+                                            <td>{{ number_format($item->amount, 0, ',', '.') }}</td>
+                                            <td>
+                                                <button class="btn btn-danger btn-sm"
+                                                    wire:click="destroyItem({{ $item->id }})" wire:confirm="Yakin ingin hapus item?">
+                                                    Hapus
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                    <tr>
+                                        <th colspan="4" class="text-center">Grand Total</th>
+                                        <td>{{ number_format($grandTotal, 0, ',', '.') }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
