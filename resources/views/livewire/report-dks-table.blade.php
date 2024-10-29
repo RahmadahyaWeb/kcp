@@ -80,14 +80,14 @@
                 </form>
             </div>
 
-            <div wire:loading.block wire:target="fromDate, toDate, user_sales, kd_toko, gotoPage" class="text-center">
+            <div wire:loading.block wire:target="toDate, user_sales, kd_toko, gotoPage" class="text-center">
                 <div class="spinner-border" role="status">
                     <span class="visually-hidden">Loading...</span>
                 </div>
             </div>
 
             <div wire:loading.class="d-none" class="table-responsive">
-                <table class="table table-hover table-bordered table-sm">
+                <table class="table table-hover table-sm">
                     <thead>
                         <tr>
                             <th>Nama</th>
