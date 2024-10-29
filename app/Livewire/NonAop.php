@@ -22,6 +22,10 @@ class NonAop extends Component
             ->where('invoiceNon', $invoiceNon)
             ->delete();
 
+        DB::table('invoice_non_detail')
+            ->where('invoiceNon', $invoiceNon)
+            ->delete();
+
         session()->flash('status', "Invoice: $invoiceNon berhasil dihapus.");
     }
 

@@ -22,6 +22,12 @@ class CreateNonAop extends Component
     #[Validate('required')]
     public $top;
 
+    #[Validate('required')]
+    public $fakturPajak;
+
+    #[Validate('required')]
+    public $notaFisik;
+
     public $invoiceGenerated;
 
     public function generateInvoiceNumber($supplierCode)
@@ -83,6 +89,8 @@ class CreateNonAop extends Component
                 'updated_at'            => now(),
                 'status'                => 'KCP',
                 'flag_selesai'          => 'N',
+                'notaFisik'             => $this->notaFisik,
+                'fakturPajak'           => $this->fakturPajak
             ]);
 
         session()->flash('status', "Data Non AOP dengan invoice: $invoiceNon berhasil ditambahkan.");

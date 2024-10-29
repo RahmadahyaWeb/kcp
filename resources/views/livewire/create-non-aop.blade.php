@@ -65,6 +65,26 @@
                             </div>
                         @enderror
                     </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Faktur Pajak</label>
+                        <input type="text" class="form-control @error('fakturPajak') is-invalid @enderror" wire:model.live="fakturPajak">
+
+                        @error('fakturPajak')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Nota Fisik</label>
+                        <input type="text" class="form-control @error('notaFisik') is-invalid @enderror" wire:model.live="notaFisik">
+
+                        @error('notaFisik')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
                     <div class="col-12 mb-3 d-flex justify-content-end">
                         <button type="submit" class="btn btn-primary">
                             <span wire:loading.remove wire:target="save">Simpan</span>

@@ -104,17 +104,6 @@
                                 @enderror
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label class="form-label">QTY</label>
-                                <input type="number" class="form-control @error('qty') is-invalid @enderror"
-                                    wire:model.live="qty">
-
-                                @error('qty')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                            <div class="col-md-4 mb-3">
                                 <label class="form-label">Harga</label>
                                 <input type="number" class="form-control @error('price') is-invalid @enderror"
                                     wire:model.live="price">
@@ -126,8 +115,34 @@
                                 @enderror
                             </div>
                             <div class="col-md-4 mb-3">
+                                <label class="form-label">QTY</label>
+                                <input type="number" class="form-control @error('qty') is-invalid @enderror"
+                                    wire:model.live="qty">
+
+                                @error('qty')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Total (Harga * Qty)</label>
+                                <input type="number" class="form-control" wire:model.live="total" disabled>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Total Nota Fisik</label>
+                                <input type="number" class="form-control @error('totalFisik') is-invalid @enderror"
+                                    wire:model.live="totalFisik">
+
+                                @error('totalFisik')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6 mb-3">
                                 <label class="form-label">Discount</label>
-                                <input type="number" class="form-control" wire:model.live="extraPlafonDiscount">
+                                <input type="number" class="form-control" wire:model.live="extraPlafonDiscount" disabled>
                             </div>
                             <div class="col-12 mb-3 d-grid">
                                 <button type="submit" class="btn btn-success">
@@ -199,7 +214,8 @@
                                             <td>{{ number_format($item->amount, 0, ',', '.') }}</td>
                                             <td>
                                                 <button class="btn btn-danger btn-sm"
-                                                    wire:click="destroyItem({{ $item->id }})" wire:confirm="Yakin ingin hapus item?">
+                                                    wire:click="destroyItem({{ $item->id }})"
+                                                    wire:confirm="Yakin ingin hapus item?">
                                                     Hapus
                                                 </button>
                                             </td>

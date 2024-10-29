@@ -13,6 +13,7 @@ class NonAopDetail extends Component
     public $search;
     public $invoiceNon;
     public $customerTo;
+    public $total;
 
     #[Validate('required')]
     public $materialNumber;
@@ -23,7 +24,31 @@ class NonAopDetail extends Component
     #[Validate('required')]
     public $price;
 
+    #[Validate('required')]
+    public $totalFisik = 0;
+
     public $extraPlafonDiscount = 0;
+
+    public function updatedQty()
+    {
+        $this->calculateTotal();
+    }
+
+    public function updatedPrice()
+    {
+        $this->calculateTotal();
+    }
+
+    public function updatedTotalFisik()
+    {
+        $this->calculateTotal();
+    }
+
+    private function calculateTotal()
+    {
+        $this->total = (int)$this->qty * (int)$this->price;
+        $this->extraPlafonDiscount = (int)$this->total - (int)$this->totalFisik;
+    }
 
     public function addItem()
     {
