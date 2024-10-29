@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AopController;
+use App\Http\Controllers\AopReceiptController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DksController;
 use App\Http\Controllers\MasterTokoController;
@@ -65,6 +66,12 @@ Route::middleware(['auth', 'check.online', 'auth.session'])->group(function () {
 
     // DETAIL NON AOP
     Route::get('/non-aop/detail/{invoiceNon}', [NonAopController::class, 'detail'])->name('non-aop.detail');
+
+    // AOP GR
+    Route::get('/aop-gr', [AopReceiptController::class, 'index'])->name('aop-gr.index');
+
+    // AOP GR DETAIL
+    Route::get('/aop-gr/detail/{invoiceAop}/{spb}', [AopReceiptController::class, 'detail'])->name('aop-gr.detail');
 
     // LOGOUT
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');

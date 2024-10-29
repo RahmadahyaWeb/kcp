@@ -134,7 +134,7 @@ class AopDetail extends Component
             $item = [];
             $item['szProductId']           = $value->materialNumber;
             $item['decQty']                = $value->qty;
-            $item['szUomId']               = "";
+            $item['szUomId']               = "PCS";
             $item['decPrize']              = $value->price;
             $item['decDiscount']           = $value->extraPlafonDiscount;
             $item['purchaseITemTypeId']    = "BELI";

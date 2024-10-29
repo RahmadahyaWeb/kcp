@@ -36,4 +36,17 @@ class KcpInformation extends Model
 
         return false;
     }
+
+    public function getIntransitBySpb($token, $spb)
+    {
+        $response = Http::withHeaders([
+            'Authorization' => "Bearer $token",
+        ])->get("http://36.91.145.235/kcpapi/api/intransit/$spb");
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        return false;
+    }
 }
