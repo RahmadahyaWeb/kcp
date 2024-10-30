@@ -12,13 +12,12 @@
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Invoice</th>
                                         <th>SPB</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td colspan="2" class="text-center">No Data</td>
+                                        <td colspan="1" class="text-center">No Data</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -26,31 +25,79 @@
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Invoice</th>
                                         <th>SPB</th>
-                                        <th>Total Qty</th>
-                                        <th>Total Terima</th>
+                                        <th>Invoice</th>
+                                        <th>Qty Invoice</th>
+                                        <th>Qty Terima</th>
+                                        <th>Status Qty</th>
+                                        <th>Status Data</th>
                                         <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($invoiceAopHeader as $header)
                                         <tr>
-                                            <td>{{ $header->invoiceAop }}</td>
                                             <td>{{ $header->SPB }}</td>
-                                            <td>{{ $header->qty }}</td>
                                             <td>
                                                 @php
-                                                    $qtyTerima = App\Livewire\AopGr::getIntransitBySpb(
-                                                        $header->SPB,
-                                                        $header->invoiceAop,
-                                                    );
+                                                    $invoices = App\Livewire\AopGr::getInvoices($header->SPB);
 
-                                                    echo $qtyTerima;
+                                                    $status = 0;
+                                                    $statusBosnet = 0;
+                                                    $statusKcp = 0;
+
+                                                    $invoiceArray = [];
+                                                    foreach ($invoices as $invoice) {
+                                                        $invoiceArray[] = $invoice->invoiceAop;
+
+                                                        if ($invoice->status == 'KCP') {
+                                                            $statusKcp += 1;
+                                                        }
+
+                                                        if ($invoice->status == 'BOSNET') {
+                                                            $statusBosnet += 1;
+                                                        }
+                                                    }
+
+                                                    $invoiceTxt = implode('<br>', $invoiceArray);
+
+                                                    echo $invoiceTxt;
                                                 @endphp
                                             </td>
                                             <td>
-                                                <a href="{{ route('aop-gr.detail', ['invoiceAop' => $header->invoiceAop, 'spb' => $header->SPB]) }}"
+                                                @php
+                                                    $totalQty = App\Livewire\AopGr::getTotalQty($header->SPB);
+
+                                                    echo $totalQty;
+                                                @endphp
+                                            </td>
+                                            <td>
+                                                @php
+                                                    $totalQtyTerima = App\Livewire\AopGr::getIntransitBySpb(
+                                                        $header->SPB,
+                                                    );
+
+                                                    echo $totalQtyTerima;
+                                                @endphp
+                                            </td>
+                                            <td>
+                                                @if ($totalQty == $totalQtyTerima)
+                                                    <span class="badge text-bg-success">Lengkap</span>
+                                                @else
+                                                    <span class="badge text-bg-danger">Belum Lengkap</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($statusKcp == count($invoiceArray))
+                                                    KCP
+                                                @elseif ($statusBosnet == count($invoiceArray))
+                                                    BOSNET
+                                                @else
+                                                    Beberapa invoice telah dikirim ke Bosnet
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <a href="{{ route('aop-gr.detail', $header->SPB) }}"
                                                     class="btn btn-sm btn-primary">Detail</a>
                                             </td>
                                         </tr>
@@ -60,9 +107,9 @@
                         @endif
                     </div>
                 </div>
-                <div class="card-footer">
+                {{-- <div class="card-footer">
                     {{ $invoiceAopHeader->links() }}
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>

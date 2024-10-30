@@ -9,12 +9,10 @@ use Livewire\Component;
 
 class AopGrDetail extends Component
 {
-    public $invoiceAop;
     public $spb;
 
-    public function mount($invoiceAop, $spb)
+    public function mount($spb)
     {
-        $this->invoiceAop = $invoiceAop;
         $this->spb = $spb;
     }
 
@@ -56,106 +54,143 @@ class AopGrDetail extends Component
 
     public function sendToBosnet()
     {
-        dd($this->sendToBosnetAPI($this->invoiceAop));
-    }
-
-    public function sendToBosnetAPI($invoiceAop)
-    {
-        $invoiceHeader = DB::table('invoice_aop_header')
-            ->select(['*'])
-            ->where('invoiceAop', $invoiceAop)
-            ->first();
-
         $invoiceDetails = DB::table('invoice_aop_detail')
             ->select(['*'])
-            ->where('invoiceAop', $invoiceAop)
-            ->whereIn('materialNumber', $this->selectedItems) // $materialNumbers harus berupa array
-            ->get();
+            ->where('SPB', $this->spb)
+            ->whereIn('materialNumber', $this->selectedItems)
+            ->get()
+            ->groupBy('invoiceAop');
 
-        // ITEMS
-        $items = [];
-        foreach ($invoiceDetails as $value) {
-            $item = [];
-            $item['szProductId']           = $value->materialNumber;
-            $item['decQty']                = $value->qty;
-            $item['szUomId']               = "PCS";
-            $item['decPrize']              = $value->price;
-            $item['decDiscount']           = $value->extraPlafonDiscount;
-            $item['purchaseITemTypeId']    = "BELI";
 
-            $items[] = $item;
+        $dataToSent = [];
+        foreach ($invoiceDetails as $invoiceAop => $details) {
+            $invoiceHeader = DB::table('invoice_aop_header')
+                ->select(['*'])
+                ->where('invoiceAop', $invoiceAop)
+                ->first();
+
+            // PAYMENT TERM ID
+            $billingDate = Carbon::parse($invoiceHeader->billingDocumentDate);
+            $dueDate = Carbon::parse($invoiceHeader->tanggalJatuhTempo);
+
+            $paymentTermId = $billingDate->diffInDays($dueDate);
+
+            $items = [];
+            foreach ($details as $value) {
+                $item['szProductId']           = $value->materialNumber;
+                $item['decQty']                = $value->qty;
+                $item['szUomId']               = "PCS";
+                $item['decPrize']              = $value->price;
+                $item['decDiscount']           = $value->extraPlafonDiscount;
+                $item['purchaseITemTypeId']    = "BELI";
+
+                $items[] = $item;
+            }
+
+            $dataToSent[] = [
+                'szFpoId'                   => $invoiceHeader->invoiceAop,
+                'dtmPO'                     => date('Y-m-d H:i:s', strtotime($invoiceHeader->billingDocumentDate)),
+                'dtmReceipt'                => "",
+                'bReturn'                   => 0,
+                'szRefDn'                   => $invoiceHeader->SPB,
+                'szWarehouseId'             => "",
+                'szStockTypeId'             => "Good Stock",
+                'szSupplierId'              => "",
+                'paymentTermId'             => $paymentTermId . " HARI",
+                'szPOReceiptIdForReturn'    => "",
+                'szWorkplaceId'             => "",
+                'szCarrierId'               => "",
+                'szVehicleId'               => "",
+                'szDriverId'                => "",
+                'szVehicleNumber'           => "",
+                'szDriverNm'                => "",
+                'szDescription'             => "",
+                'items'                     => $items
+            ];
         }
 
-        // PAYMENT TERM ID
-        $billingDate = Carbon::parse($invoiceHeader->billingDocumentDate);
-        $dueDate = Carbon::parse($invoiceHeader->tanggalJatuhTempo);
-
-        $paymentTermId = $billingDate->diffInDays($dueDate);
-
-        return [
-            'szFpoId'                   => $invoiceHeader->invoiceAop,
-            'dtmPO'                     => date('Y-m-d H:i:s', strtotime($invoiceHeader->billingDocumentDate)),
-            'dtmReceipt'                => "",
-            'bReturn'                   => 0,
-            'szRefDn'                   => $invoiceHeader->SPB,
-            'szWarehouseId'             => "",
-            'szStockTypeId'             => "Good Stock",
-            'szSupplierId'              => "",
-            'paymentTermId'             => $paymentTermId . " HARI",
-            'szPOReceiptIdForReturn'    => "",
-            'szWorkplaceId'             => "",
-            'szCarrierId'               => "",
-            'szVehicleId'               => "",
-            'szDriverId'                => "",
-            'szVehicleNumber'           => "",
-            'szDriverNm'                => "",
-            'szDescription'             => "",
-            'items'                     => $items
-        ];
+        dd($dataToSent);
     }
 
     public function render()
     {
         $details = DB::table('invoice_aop_detail')
-            ->where('invoiceAop', $this->invoiceAop)
+            ->where('SPB', $this->spb)
             ->get();
-
-        $dataIntransit = $this->getIntransitBySpb($this->spb);
-
-        $dataIntransit = $dataIntransit['data'];
-
-        $materialNumbers = $details->pluck('materialNumber')->toArray();
-
-        $filteredDataIntransit = array_filter($dataIntransit, function ($item) use ($materialNumbers) {
-            return in_array($item['part_no'], $materialNumbers);
-        });
-
-        $groupedDataIntransit = array_reduce($filteredDataIntransit, function ($carry, $item) {
-            $partNo = $item['part_no'];
-
-            if (!isset($carry[$partNo])) {
-                $carry[$partNo] = [
-                    'part_no' => $partNo,
-                    'qty_terima' => 0
-                ];
-            }
-
-            $carry[$partNo]['qty_terima'] += $item['qty_terima']; // Jumlahkan qty
-
-            return $carry;
-        }, []);
-
-
-        foreach ($details as $detail) {
-            if (isset($groupedDataIntransit[$detail->materialNumber])) {
-                $detail->qty_terima = $groupedDataIntransit[$detail->materialNumber]['qty_terima'];
-            } else {
-                $detail->qty_terima = 0;
-            }
-        }
 
         $this->details = $details;
 
-        return view('livewire.aop-gr-detail', compact('details', 'groupedDataIntransit'));
+        $grouped = [];
+
+        foreach ($details as $detail) {
+            $key = $detail->materialNumber;
+
+            $header = DB::table('invoice_aop_header as h')
+                ->join('invoice_aop_detail as d', 'h.invoiceAop', '=', 'd.invoiceAop')
+                ->where('h.SPB', $detail->SPB)
+                ->where('d.materialNumber', $key)
+                ->select('h.*')
+                ->get();
+            
+            $status = 'BOSNET';
+            foreach ($header as $value) {
+                if ($value->status == 'KCP') {
+                    $status = 'KCP';
+                }
+            }
+
+            if (!isset($grouped[$key])) {
+                $grouped[$key] = [
+                    'materialNumber'    => $detail->materialNumber,
+                    'total_qty'         => 0,
+                    'status'            => $status,
+                    'invoices'          => []
+                ];
+            }
+
+            $grouped[$key]['total_qty'] += $detail->qty;
+
+            $grouped[$key]['invoices'][$detail->invoiceAop] =
+                isset($grouped[$key]['invoices'][$detail->invoiceAop])
+                ? $grouped[$key]['invoices'][$detail->invoiceAop] + $detail->qty
+                : $detail->qty;
+        }
+
+        $finalResult = array_values($grouped);
+
+        $dataIntransit = $this->getIntransitBySpb($this->spb);
+
+        if (isset($dataIntransit['data'])) {
+            $dataIntransit = $dataIntransit['data'];
+
+            $qtyTerimaByPartNo = array_reduce($dataIntransit, function ($carry, $item) {
+                $partNo = $item['part_no'];
+                $qtyTerima = (int)$item['qty_terima'];
+
+                if (!isset($carry[$partNo])) {
+                    $carry[$partNo] = 0;
+                }
+
+                $carry[$partNo] += $qtyTerima;
+
+                return $carry;
+            }, []);
+
+            foreach ($finalResult as &$item) {
+                $materialNumber = $item['materialNumber'];
+
+                $item['qty_terima'] = 0;
+
+                if (isset($qtyTerimaByPartNo[$materialNumber])) {
+                    $item['qty_terima'] = $qtyTerimaByPartNo[$materialNumber];
+                }
+            }
+        } else {
+            foreach ($finalResult as &$item) {
+                $item['qty_terima'] = 0;
+            }
+        }
+
+        return view('livewire.aop-gr-detail', compact('finalResult'));
     }
 }

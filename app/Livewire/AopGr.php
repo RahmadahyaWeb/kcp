@@ -11,10 +11,27 @@ use Livewire\WithPagination;
 class AopGr extends Component
 {
     use WithPagination, WithoutUrlPagination;
+    protected $paginationTheme = 'bootstrap';
 
     public $invoiceAop;
 
-    public static function getIntransitBySpb($spb, $invoiceAop)
+    public static function getTotalQty($spb)
+    {
+        return DB::table('invoice_aop_header')
+            ->where('SPB', $spb)
+            ->sum('qty');
+    }
+
+    public static function getInvoices($spb)
+    {
+        return DB::table('invoice_aop_header')
+            ->select(['invoiceAop', 'status'])
+            ->where('SPB', $spb)
+            ->get();
+    }
+
+
+    public static function getIntransitBySpb($spb)
     {
         $kcpInformation = new KcpInformation;
 
@@ -26,58 +43,25 @@ class AopGr extends Component
 
         $intransitStock = $kcpInformation->getIntransitBySpb($token, $spb);
 
-        $details = DB::table('invoice_aop_detail')
-            ->where('invoiceAop', $invoiceAop)
-            ->get();
-
-        $dataIntransit = $intransitStock['data'];
-
-        $materialNumbers = $details->pluck('materialNumber')->toArray();
-
-        $filteredDataIntransit = array_filter($dataIntransit, function ($item) use ($materialNumbers) {
-            return in_array($item['part_no'], $materialNumbers);
-        });
-
-        $groupedDataIntransit = array_reduce($filteredDataIntransit, function ($carry, $item) {
-            $partNo = $item['part_no'];
-
-            if (!isset($carry[$partNo])) {
-                $carry[$partNo] = [
-                    'part_no' => $partNo,
-                    'qty_terima' => 0
-                ];
-            }
-
-            $carry[$partNo]['qty_terima'] += $item['qty_terima']; // Jumlahkan qty
-
-            return $carry;
-        }, []);
-
-        foreach ($details as $detail) {
-            if (isset($groupedDataIntransit[$detail->materialNumber])) {
-                $detail->qty_terima = $groupedDataIntransit[$detail->materialNumber]['qty_terima'];
-            } else {
-                $detail->qty_terima = 0;
-            }
-        }
-
         $totalQtyTerima = 0;
-        foreach ($details as $detail) {
-            $totalQtyTerima += $detail->qty_terima;
-        }
 
-       return $totalQtyTerima;
+        if (isset($intransitStock['data'])) {
+            foreach ($intransitStock as $items) {
+                foreach ($items as $item) {
+                    $totalQtyTerima += $item['qty_terima'];
+                }
+            }
+        } 
+
+        return $totalQtyTerima;
     }
 
     public function render()
     {
         $invoiceAopHeader = DB::table('invoice_aop_header')
-            ->select(['*'])
-            ->where('invoiceAop', 'like', '%' . $this->invoiceAop . '%')
-            ->where('flag_selesai', 'Y')
-            ->where('status', 'BOSNET')
-            ->orderBy('billingDocumentDate', 'asc')
-            ->paginate(20);
+            ->select('SPB')
+            ->groupBy('spb')
+            ->get();
 
         return view('livewire.aop-gr', compact('invoiceAopHeader'));
     }

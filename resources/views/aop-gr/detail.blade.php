@@ -10,5 +10,5 @@
 @endsection
 
 @section('content')
-    <livewire:aop-gr-detail :invoiceAop="$invoiceAop" :spb="$spb" />
+    <livewire:aop-gr-detail :spb="$spb" />
 @endsection

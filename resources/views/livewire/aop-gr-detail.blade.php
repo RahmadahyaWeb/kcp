@@ -1,7 +1,7 @@
 <div>
     <div class="card">
         <div class="card-header">
-            Detail Good Receipt: <b>{{ $invoiceAop }}</b>
+            Detail Good Receipt: <b>{{$spb}}</b>
             <hr>
         </div>
         <div class="card-body">
@@ -13,25 +13,40 @@
                     <thead>
                         <tr>
                             <th>
-                                <input type="checkbox" wire:model="selectAll" wire:click="toggleSelectAll">
+                                {{-- <input type="checkbox" wire:model="selectAll" wire:click="toggleSelectAll"> --}}
                             </th>
-                            <th>SPB</th>
                             <th>Part No</th>
-                            <th>Qty Invoice</th>
-                            <th>Qty Terima</th>
+                            <th>Total Qty</th>
+                            <th>Total Qty Terima</th>
+                            <th>Data From</th>
+                            <th>Status</th> 
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($details as $item)
+                        @foreach ($finalResult as $item)
                             <tr>
+                                    <td>
+                                        <input type="checkbox" wire:model.change="selectedItems"
+                                            value="{{ $item['materialNumber'] }}"
+                                            @if ($item['total_qty'] != $item['qty_terima'] || $item['status'] == 'KCP') disabled @endif>
+                                    </td>
+                                <td>{{ $item['materialNumber'] }}</td>
+                                <td>{{ $item['total_qty'] }}</td>
+                                <td>{{ isset($item['qty_terima']) ? $item['qty_terima'] : 0 }}</td>
                                 <td>
-                                    <input type="checkbox" wire:model.change="selectedItems"
-                                        value="{{ $item->materialNumber }}">
+                                    @foreach ($item['invoices'] as $invoice => $qty)
+                                        <div>
+                                            <span>{{ $invoice }}: {{ $qty }}</span>
+                                        </div>
+                                    @endforeach
                                 </td>
-                                <td>{{ $item->SPB }}</td>
-                                <td>{{ $item->materialNumber }}</td>
-                                <td>{{ $item->qty }}</td>
-                                <td>{{ $item->qty_terima }}</td>
+                                <td>
+                                    @if ($item['total_qty'] == $item['qty_terima'])
+                                        <span class="badge text-bg-success">Lengkap</span>
+                                    @else
+                                        <span class="badge text-bg-danger">Belum Lengkap</span>
+                                    @endif
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>

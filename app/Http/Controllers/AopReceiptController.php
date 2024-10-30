@@ -11,8 +11,8 @@ class AopReceiptController extends Controller
         return view('aop-gr.index');
     }
 
-    public function detail($invoiceAop, $spb)
+    public function detail($spb)
     {
-        return view('aop-gr.detail', compact('invoiceAop', 'spb'));
+        return view('aop-gr.detail', compact('spb'));
     }
 }
