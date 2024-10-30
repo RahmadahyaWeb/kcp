@@ -15,23 +15,30 @@ class AopGr extends Component
 
     public $invoiceAop;
 
-    public static function getTotalQty($spb)
+    public function getTotalQty($spb)
     {
         return DB::table('invoice_aop_header')
             ->where('SPB', $spb)
             ->sum('qty');
     }
 
-    public static function getInvoices($spb)
+    public function getInvoices($spb)
     {
-        return DB::table('invoice_aop_header')
+        $invoices = DB::table('invoice_aop_header')
             ->select(['invoiceAop', 'status'])
             ->where('SPB', $spb)
             ->get();
+
+        $invoiceArray = [];
+        foreach ($invoices as $invoice) {
+            $invoiceArray[] = $invoice->invoiceAop;
+        }
+
+        return $invoiceArray;
     }
 
 
-    public static function getIntransitBySpb($spb)
+    public function getIntransitBySpb($spb)
     {
         $kcpInformation = new KcpInformation;
 
@@ -51,7 +58,7 @@ class AopGr extends Component
                     $totalQtyTerima += $item['qty_terima'];
                 }
             }
-        } 
+        }
 
         return $totalQtyTerima;
     }
@@ -60,9 +67,24 @@ class AopGr extends Component
     {
         $invoiceAopHeader = DB::table('invoice_aop_header')
             ->select('SPB')
-            ->groupBy('spb')
+            ->groupBy('SPB')
             ->get();
 
-        return view('livewire.aop-gr', compact('invoiceAopHeader'));
+        $items = [];
+        foreach ($invoiceAopHeader as $spb) {
+            $totalQtyTerima = $this->getIntransitBySpb($spb->SPB);
+            $totalQty = $this->getTotalQty($spb->SPB);
+            $invoices = $this->getInvoices($spb->SPB);
+
+            // Masukkan hasil ke dalam array $items
+            $items[$spb->SPB] = [
+                'spb'            => $spb->SPB,
+                'totalQtyTerima' => $totalQtyTerima,
+                'totalQty'       => $totalQty,
+                'invoices'       => $invoices,
+            ];
+        }
+
+        return view('livewire.aop-gr', compact('items'));
     }
 }

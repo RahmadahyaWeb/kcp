@@ -148,20 +148,19 @@ class AopDetail extends Component
 
         $paymentTermId = $billingDate->diffInDays($dueDate);
 
-        return true;
-
-        return [
+        $dataToSent = [
             'szFpoId'                   => $invoiceHeader->invoiceAop,
+            'szFAPInvoiceId'            => $invoiceHeader->invoiceAop,
             'dtmPO'                     => date('Y-m-d H:i:s', strtotime($invoiceHeader->billingDocumentDate)),
             'dtmReceipt'                => "",
             'bReturn'                   => 0,
             'szRefDn'                   => $invoiceHeader->SPB,
-            'szWarehouseId'             => "",
+            'szWarehouseId'             => "KCP01001",
             'szStockTypeId'             => "Good Stock",
-            'szSupplierId'              => "",
+            'szSupplierId'              => "AOP",
             'paymentTermId'             => $paymentTermId . " HARI",
             'szPOReceiptIdForReturn'    => "",
-            'szWorkplaceId'             => "",
+            'szWorkplaceId'             => "KCP01001",
             'szCarrierId'               => "",
             'szVehicleId'               => "",
             'szDriverId'                => "",
@@ -170,6 +169,10 @@ class AopDetail extends Component
             'szDescription'             => "",
             'items'                     => $items
         ];
+
+        return true;
+
+        // PROSES HIT API
     }
 
     public $invoiceAop;

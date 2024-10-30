@@ -10,6 +10,7 @@ use Livewire\Component;
 class AopGrDetail extends Component
 {
     public $spb;
+    public $statusItem;  
 
     public function mount($spb)
     {
@@ -63,6 +64,7 @@ class AopGrDetail extends Component
 
 
         $dataToSent = [];
+        $itemsToUpdate = [];
         foreach ($invoiceDetails as $invoiceAop => $details) {
             $invoiceHeader = DB::table('invoice_aop_header')
                 ->select(['*'])
@@ -89,16 +91,17 @@ class AopGrDetail extends Component
 
             $dataToSent[] = [
                 'szFpoId'                   => $invoiceHeader->invoiceAop,
+                'szFAPInvoiceId'            => $invoiceHeader->invoiceAop,
                 'dtmPO'                     => date('Y-m-d H:i:s', strtotime($invoiceHeader->billingDocumentDate)),
-                'dtmReceipt'                => "",
+                'dtmReceipt'                => "2024-10-15 00:00:00",
                 'bReturn'                   => 0,
                 'szRefDn'                   => $invoiceHeader->SPB,
-                'szWarehouseId'             => "",
+                'szWarehouseId'             => "KCP01001",
                 'szStockTypeId'             => "Good Stock",
-                'szSupplierId'              => "",
+                'szSupplierId'              => "AOP",
                 'paymentTermId'             => $paymentTermId . " HARI",
                 'szPOReceiptIdForReturn'    => "",
-                'szWorkplaceId'             => "",
+                'szWorkplaceId'             => "KCP01001",
                 'szCarrierId'               => "",
                 'szVehicleId'               => "",
                 'szDriverId'                => "",
@@ -107,9 +110,35 @@ class AopGrDetail extends Component
                 'szDescription'             => "",
                 'items'                     => $items
             ];
+
+            $itemsToUpdate[] = $items;
         }
 
-        dd($dataToSent);
+        if ($this->sendToBosnetAPI($dataToSent)) {
+
+            foreach ($itemsToUpdate as $items) {
+                foreach ($items as $item) {
+                    $materialNumber = $item['szProductId'];
+
+                    DB::table('invoice_aop_detail')
+                        ->where('SPB', $this->spb)
+                        ->where('materialNumber', $materialNumber)
+                        ->update([
+                            'status'        => 'BOSNET',
+                            'updated_at'    => now()
+                        ]);
+                }
+            }
+
+            $this->selectedItems = [];
+            session()->flash('status', "Data berhasil dikirim!");
+        }
+    }
+
+    public function sendToBosnetAPI($dataToSent)
+    {
+        // PROSES HIT API
+        return true;
     }
 
     public function render()
@@ -123,6 +152,10 @@ class AopGrDetail extends Component
         $grouped = [];
 
         foreach ($details as $detail) {
+            if (!empty($this->statusItem) && $detail->status !== $this->statusItem) {
+                continue;
+            }
+
             $key = $detail->materialNumber;
 
             $header = DB::table('invoice_aop_header as h')
@@ -131,7 +164,7 @@ class AopGrDetail extends Component
                 ->where('d.materialNumber', $key)
                 ->select('h.*')
                 ->get();
-            
+
             $status = 'BOSNET';
             foreach ($header as $value) {
                 if ($value->status == 'KCP') {
@@ -143,7 +176,8 @@ class AopGrDetail extends Component
                 $grouped[$key] = [
                     'materialNumber'    => $detail->materialNumber,
                     'total_qty'         => 0,
-                    'status'            => $status,
+                    'statusHeader'      => $status,
+                    'statusItem'        => $detail->status,
                     'invoices'          => []
                 ];
             }
