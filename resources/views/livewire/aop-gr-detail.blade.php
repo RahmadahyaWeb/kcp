@@ -6,7 +6,9 @@
         </div>
         <div class="card-body">
             <div class="d-flex justify-content-end mb-3">
-                <button class="btn btn-warning" wire:click="sendToBosnet">Kirim ke Bosnet</button>
+                <button class="btn btn-warning" wire:click="sendToBosnet" @disabled(count($selectedItems) < 1)>
+                    Kirim ke Bosnet
+                </button>                
             </div>
             <div class="table-responsive">
                 <table class="table table-hover">
