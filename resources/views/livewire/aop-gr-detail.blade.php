@@ -22,7 +22,7 @@
                 </div>
             </div>
 
-            <div wire:loading.flex wire:target="sendToBosnet, statusItem"
+            <div wire:loading.flex wire:target="statusItem"
                 class="text-center justify-content-center align-items-center" style="height: 200px;">
                 <div class="spinner-border" role="status">
                     <span class="visually-hidden">Loading...</span>
