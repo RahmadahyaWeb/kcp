@@ -29,7 +29,7 @@
                 </div>
             </div>
 
-            <div class="table-responsive" wire:loading.class = "d-none" wire:target="sendToBosnet, statusItem">
+            <div class="table-responsive" wire:loading.class = "d-none" wire:target="statusItem">
                 <table class="table table-hover">
                     <thead>
                         <tr>
@@ -80,9 +80,10 @@
 
     <!-- Floating Button -->
     <div style="position: fixed; bottom: 40px; right: 40px; z-index: 1000;">
-        <button class="btn btn-warning" wire:click="sendToBosnet" @disabled(count($selectedItems) < 1)>
-            <span wire:loading.remove wire:target="sendToBosnet">Kirim ke Bosnet</span>
-            <span wire:loading wire:target="sendToBosnet">Loading...</span>
+        <button class="btn btn-warning" wire:loading.attr="disabled" wire:target="sendToBosnet, selectedItems"
+            wire:click="sendToBosnet" @disabled(count($selectedItems) < 1) wire:confirm="Yakin ingin kirim data ke Bosnet?">
+            <span wire:loading.remove wire:target="sendToBosnet, selectedItems">Kirim ke Bosnet</span>
+            <span wire:loading wire:target="sendToBosnet, selectedItems">Loading...</span>
         </button>
     </div>
 </div>
