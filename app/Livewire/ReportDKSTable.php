@@ -40,10 +40,10 @@ class ReportDksTable extends Component
                 'in_data.kd_toko',
                 'katalog_data.katalog_at',
                 DB::raw('CASE 
-                            WHEN out_data.waktu_kunjungan IS NOT NULL 
-                            THEN TIMESTAMPDIFF(MINUTE, in_data.waktu_kunjungan, out_data.waktu_kunjungan) 
-                            ELSE NULL 
-                        END AS lama_kunjungan')
+                        WHEN out_data.waktu_kunjungan IS NOT NULL 
+                        THEN TIMESTAMPDIFF(MINUTE, in_data.waktu_kunjungan, out_data.waktu_kunjungan) 
+                        ELSE NULL 
+                    END AS lama_kunjungan')
             )
             ->leftJoin('trns_dks AS out_data', function ($join) {
                 $join->on('in_data.user_sales', '=', 'out_data.user_sales')
@@ -68,6 +68,7 @@ class ReportDksTable extends Component
             ->when($this->kd_toko, function ($query) {
                 return $query->where('master_toko.kd_toko', $this->kd_toko);
             })
+            ->whereDate('in_data.tgl_kunjungan', '>', '2024-10-31') // Add this line
             ->orderBy('in_data.created_at', 'desc')
             ->paginate(15);
 
