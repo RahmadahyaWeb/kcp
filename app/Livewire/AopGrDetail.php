@@ -141,8 +141,23 @@ class AopGrDetail extends Component
         return true;
     }
 
+    public function checkApiConn()
+    {
+        $kcpInformation = new KcpInformation;
+
+        $login = $kcpInformation->login();
+
+        return $login;
+    }
+
     public function render()
     {
+        $conn = $this->checkApiConn();
+
+        if (!$conn) {
+            abort(500);
+        }
+
         $details = DB::table('invoice_aop_detail')
             ->where('SPB', $this->spb)
             ->get();

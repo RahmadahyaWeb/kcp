@@ -46,6 +46,10 @@ class AopGr extends Component
             $token = $login['token'];
         }
 
+        if (!$login) {
+            return 0;
+        }
+
         $intransitStock = $kcpInformation->getIntransitBySpb($token, $spb);
 
         $totalQtyTerima = 0;
@@ -61,11 +65,22 @@ class AopGr extends Component
         return $totalQtyTerima;
     }
 
+    public function checkApiConn()
+    {
+        $kcpInformation = new KcpInformation;
+
+        $login = $kcpInformation->login();
+
+        return $login;
+    }
+
     public $invoiceAop;
     public $spb;
 
     public function render()
     {
+        $conn = $this->checkApiConn();
+
         $invoiceAopHeader = DB::table('invoice_aop_header')
             ->select('SPB')
             ->groupBy('SPB')
@@ -73,7 +88,13 @@ class AopGr extends Component
 
         $items = [];
         foreach ($invoiceAopHeader as $spb) {
-            $totalQtyTerima = $this->getIntransitBySpb($spb->SPB);
+
+            if ($conn) {
+                $totalQtyTerima = $this->getIntransitBySpb($spb->SPB);
+            } else {
+                $totalQtyTerima = 'API Error.';
+            }
+
             $totalQty = $this->getTotalQty($spb->SPB);
             $invoices = $this->getInvoices($spb->SPB);
 

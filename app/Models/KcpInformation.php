@@ -12,17 +12,22 @@ class KcpInformation extends Model
 
     public function login()
     {
-        $response = Http::asForm()->post('http://36.91.145.235/kcpapi/auth/login', [
-            'username' => 'rahmatt',
-            'password' => 'dedeikusyg24',
-        ]);
+        try {
+            $response = Http::timeout(10)->asForm()->post('http://36.91.145.235/kcpapi/auth/login', [
+                'username' => 'rahmatt',
+                'password' => 'dedeikusyg24',
+            ]);
 
-        if ($response->successful()) {
-            return $response->json();
+            if ($response->successful()) {
+                return $response->json();
+            }
+
+            return false;
+        } catch (\Exception $e) {
+            return false;
         }
-
-        return false;
     }
+
 
     public function getNonAopParts($token)
     {

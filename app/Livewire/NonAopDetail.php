@@ -223,8 +223,23 @@ class NonAopDetail extends Component
         }
     }
 
+    public function checkApiConn()
+    {
+        $kcpInformation = new KcpInformation;
+
+        $login = $kcpInformation->login();
+
+        return $login;
+    }
+
     public function render()
     {
+        $conn = $this->checkApiConn();
+
+        if (!$conn) {
+            abort(500);
+        }
+
         $header = DB::table('invoice_non_header')
             ->where('invoiceNon', $this->invoiceNon)
             ->leftJoin('master_supplier', 'invoice_non_header.supplierCode', '=', 'master_supplier.supplierCode')

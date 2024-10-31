@@ -55,7 +55,7 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
                 $sheet->mergeCells('H1:I1');
                 $sheet->mergeCells('J1:K1');
                 $sheet->mergeCells('L1:M1');
-                $sheet->mergeCells('N1:N2');
+                $sheet->mergeCells('N1:O1');
 
                 // SET HEADER TITLE
                 $sheet->setCellValue('A1', "Sales");
@@ -75,6 +75,8 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
                 $sheet->setCellValue('L2', "Kunjungan");
                 $sheet->setCellValue('M2', "Punishment");
                 $sheet->setCellValue('N1', "Katalog");
+                $sheet->setCellValue('N2', "Tgl.Katalog");
+                $sheet->setCellValue('O2', "Jam Katalog");
 
                 // HEADER STYLE
                 $styleArray = [
@@ -87,13 +89,13 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
                     ],
                 ];
 
-                $cellRange = 'A1:N2';
+                $cellRange = 'A1:O2';
                 $event->sheet->getDelegate()->getStyle($cellRange)->applyFromArray($styleArray);
 
                 $sheet->getRowDimension(2)->setRowHeight(20);
 
                 // Enable auto width for all columns
-                foreach (range('A', 'N') as $columnID) {
+                foreach (range('A', 'O') as $columnID) {
                     $sheet->getColumnDimension($columnID)->setAutoSize(true);
                 }
 
@@ -310,8 +312,12 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
         // KATALOG
         $katalog = $row->katalog_at;
 
-        if (!$katalog) {
-            $katalog = '-';
+        if ($katalog) {
+            $tgl_katalog = Date::dateTimeToExcel(Carbon::parse($row->katalog_at));
+            $jam_katalog = \Carbon\Carbon::parse($row->katalog_at)->format('H:i:s');
+        } else {
+            $tgl_katalog = '';
+            $jam_katalog = '';
         }
 
         return [
@@ -328,7 +334,8 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
             $punishment_durasi_lama_perjalanan,
             $kunjungan,
             $punishment_cek_in_cek_out,
-            $katalog,
+            $tgl_katalog,
+            $jam_katalog,
         ];
     }
 
@@ -336,6 +343,7 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
     {
         return [
             'B' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'N' => NumberFormat::FORMAT_DATE_DDMMYYYY,
         ];
     }
 
