@@ -13,8 +13,6 @@ class AopGr extends Component
     use WithPagination, WithoutUrlPagination;
     protected $paginationTheme = 'bootstrap';
 
-    public $invoiceAop;
-
     public function getTotalQty($spb)
     {
         return DB::table('invoice_aop_header')
@@ -63,6 +61,9 @@ class AopGr extends Component
         return $totalQtyTerima;
     }
 
+    public $invoiceAop;
+    public $spb;
+
     public function render()
     {
         $invoiceAopHeader = DB::table('invoice_aop_header')
@@ -76,13 +77,29 @@ class AopGr extends Component
             $totalQty = $this->getTotalQty($spb->SPB);
             $invoices = $this->getInvoices($spb->SPB);
 
-            // Masukkan hasil ke dalam array $items
             $items[$spb->SPB] = [
                 'spb'            => $spb->SPB,
                 'totalQtyTerima' => $totalQtyTerima,
                 'totalQty'       => $totalQty,
                 'invoices'       => $invoices,
             ];
+        }
+
+        if ($this->invoiceAop) {
+            $items = array_filter($items, function ($item) {
+                foreach ($item['invoices'] as $invoice) {
+                    if (strpos($invoice, $this->invoiceAop) !== false) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+        }
+
+        if ($this->spb) {
+            $items = array_filter($items, function ($item) {
+                return strpos($item['spb'], $this->spb) !== false;
+            });
         }
 
         return view('livewire.aop-gr', compact('items'));

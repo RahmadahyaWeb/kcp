@@ -7,7 +7,27 @@
                     <hr>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
+                    <div class="row mb-3">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Invoice AOP</label>
+                            <input type="text" class="form-control" wire:model.live.debounce.1000ms="invoiceAop"
+                                placeholder="Invoice AOP" wire:loading.attr="disabled">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">SPB</label>
+                            <input type="text" class="form-control" wire:model.live.debounce.1000ms="spb"
+                                placeholder="SPB" wire:loading.attr="disabled">
+                        </div>
+                    </div>
+
+                    <div wire:loading.flex wire:target="invoiceAop"
+                        class="text-center justify-content-center align-items-center" style="height: 200px;">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive" wire:loading.class="d-none" wire:target="invoiceAop">
                         @if (empty($items))
                             <table class="table table-hover">
                                 <thead>
