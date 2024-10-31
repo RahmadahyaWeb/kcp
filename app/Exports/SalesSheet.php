@@ -55,6 +55,7 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
                 $sheet->mergeCells('H1:I1');
                 $sheet->mergeCells('J1:K1');
                 $sheet->mergeCells('L1:M1');
+                $sheet->mergeCells('N1:N2');
 
                 // SET HEADER TITLE
                 $sheet->setCellValue('A1', "Sales");
@@ -73,6 +74,7 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
                 $sheet->setCellValue('L1', "Cek In / Cek Out");
                 $sheet->setCellValue('L2', "Kunjungan");
                 $sheet->setCellValue('M2', "Punishment");
+                $sheet->setCellValue('N1', "Katalog");
 
                 // HEADER STYLE
                 $styleArray = [
@@ -85,13 +87,13 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
                     ],
                 ];
 
-                $cellRange = 'A1:M2';
+                $cellRange = 'A1:N2';
                 $event->sheet->getDelegate()->getStyle($cellRange)->applyFromArray($styleArray);
 
                 $sheet->getRowDimension(2)->setRowHeight(20);
 
                 // Enable auto width for all columns
-                foreach (range('A', 'M') as $columnID) {
+                foreach (range('A', 'N') as $columnID) {
                     $sheet->getColumnDimension($columnID)->setAutoSize(true);
                 }
 
@@ -146,21 +148,23 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
 
     public function collection()
     {
-        $items = DB::table('trns_dks')->select(
-            'trns_dks.id',
-            'trns_dks.user_sales',
-            'master_toko.nama_toko',
-            'trns_dks.waktu_kunjungan AS waktu_cek_in',
-            'out_data.waktu_kunjungan AS waktu_cek_out',
-            'trns_dks.tgl_kunjungan',
-            'out_data.keterangan',
-            'trns_dks.kd_toko',
-            DB::raw('CASE 
-                        WHEN out_data.waktu_kunjungan IS NOT NULL 
-                        THEN TIMESTAMPDIFF(MINUTE, trns_dks.waktu_kunjungan, out_data.waktu_kunjungan) 
-                        ELSE NULL 
-                    END AS lama_kunjungan')
-        )
+        $items = DB::table('trns_dks')
+            ->select(
+                'trns_dks.id',
+                'trns_dks.user_sales',
+                'master_toko.nama_toko',
+                'trns_dks.waktu_kunjungan AS waktu_cek_in',
+                'out_data.waktu_kunjungan AS waktu_cek_out',
+                'trns_dks.tgl_kunjungan',
+                'out_data.keterangan',
+                'trns_dks.kd_toko',
+                'katalog_data.katalog_at',
+                DB::raw('CASE 
+                            WHEN out_data.waktu_kunjungan IS NOT NULL 
+                            THEN TIMESTAMPDIFF(MINUTE, trns_dks.waktu_kunjungan, out_data.waktu_kunjungan) 
+                            ELSE NULL 
+                        END AS lama_kunjungan')
+            )
             ->leftJoin('trns_dks AS out_data', function ($join) {
                 $join->on('trns_dks.user_sales', '=', 'out_data.user_sales')
                     ->whereColumn('trns_dks.kd_toko', 'out_data.kd_toko')
@@ -168,6 +172,12 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
                     ->where('out_data.type', '=', 'out');
             })
             ->leftJoin('master_toko', 'trns_dks.kd_toko', '=', 'master_toko.kd_toko')
+            ->leftJoin('trns_dks AS katalog_data', function ($join) {
+                $join->on('trns_dks.user_sales', '=', 'katalog_data.user_sales')
+                    ->whereColumn('trns_dks.kd_toko', 'katalog_data.kd_toko')
+                    ->whereColumn('trns_dks.tgl_kunjungan', 'katalog_data.tgl_kunjungan')
+                    ->where('katalog_data.type', '=', 'katalog');
+            })
             ->where('trns_dks.type', 'in')
             ->where('trns_dks.user_sales', $this->user_sales)
             ->whereBetween('trns_dks.tgl_kunjungan', [$this->fromDate, $this->toDate])
@@ -281,7 +291,6 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
         }
 
         // UNTUK ABSEN SALESMAN
-
         $tokoAbsen = [
             '6B',
             '6C',
@@ -298,6 +307,13 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
             $kunjungan = 'A';
         }
 
+        // KATALOG
+        $katalog = $row->katalog_at;
+
+        if (!$katalog) {
+            $katalog = '-';
+        }
+
         return [
             $row->user_sales,
             $excelDate,
@@ -312,6 +328,7 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
             $punishment_durasi_lama_perjalanan,
             $kunjungan,
             $punishment_cek_in_cek_out,
+            $katalog,
         ];
     }
 

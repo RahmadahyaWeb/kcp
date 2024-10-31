@@ -67,6 +67,7 @@ class DksController extends Controller
         $longitude  = $request->longitude;
         $keterangan = strtolower($request->keterangan);
         $user       = Auth::user()->username;
+        $katalog    = $request->get('katalog');
 
         // JARAK ANTARA USER DENGAN TOKO DALAM METER
         $distance = $request->distance;
@@ -88,12 +89,24 @@ class DksController extends Controller
 
         if ($check == 0) {
             $type = 'in';
+
+            if ($katalog[6] == 'Y') {
+                return redirect()->back()->with('error', 'Tidak dapat scan katalog. Anda belum melakukan check in!');
+            }
         } else if ($check == 2) {
             return redirect()->back()->with('error', 'Anda sudah melakukan check out!');
         } else if ($keterangan == 'ist') {
             $type = 'out';
+
+            if ($katalog[6] == 'Y') {
+                return redirect()->back()->with('error', 'Anda sudah melakukan scan katalog!');
+            }
         } else {
             $type = 'out';
+
+            if ($katalog[6] == 'Y') {
+                return redirect()->back()->with('error', 'Anda sudah melakukan scan katalog!');
+            }
         }
 
         // VALIDASI TOKO AKTIF
@@ -114,7 +127,6 @@ class DksController extends Controller
         }
 
         // JIKA ADA PARAMETER KATALOG
-        $katalog = $request->get('katalog');
         if ($katalog[6] == 'Y') {
             DB::table('trns_dks')
                 ->insert(
