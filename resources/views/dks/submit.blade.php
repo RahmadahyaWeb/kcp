@@ -33,6 +33,7 @@
                     <input type="hidden" name="latitude" id="latitude">
                     <input type="hidden" name="longitude" id="longitude">
                     <input type="hidden" name="distance" id="distance">
+                    <input type="hidden" name="katalog" id="katalog" value="{{ $katalog }}">
 
                     <div class="col-12 mb-3">
                         <label for="status" class="form-label">Status</label>

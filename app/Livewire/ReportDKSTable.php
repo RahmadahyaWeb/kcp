@@ -38,6 +38,7 @@ class ReportDksTable extends Component
                 'in_data.tgl_kunjungan',
                 'out_data.keterangan',
                 'in_data.kd_toko',
+                'katalog_data.katalog_at',
                 DB::raw('CASE 
                             WHEN out_data.waktu_kunjungan IS NOT NULL 
                             THEN TIMESTAMPDIFF(MINUTE, in_data.waktu_kunjungan, out_data.waktu_kunjungan) 
@@ -51,6 +52,12 @@ class ReportDksTable extends Component
                     ->where('out_data.type', '=', 'out');
             })
             ->leftJoin('master_toko', 'in_data.kd_toko', '=', 'master_toko.kd_toko')
+            ->leftJoin('trns_dks AS katalog_data', function ($join) {
+                $join->on('in_data.user_sales', '=', 'katalog_data.user_sales')
+                    ->whereColumn('in_data.kd_toko', 'katalog_data.kd_toko')
+                    ->whereColumn('in_data.tgl_kunjungan', 'katalog_data.tgl_kunjungan')
+                    ->where('katalog_data.type', '=', 'katalog');
+            })
             ->where('in_data.type', 'in')
             ->when($this->fromDate && $this->toDate, function ($query) {
                 return $query->whereBetween('in_data.tgl_kunjungan', [$this->fromDate, $this->toDate]);

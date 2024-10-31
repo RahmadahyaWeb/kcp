@@ -97,6 +97,15 @@
             const html5QrCode = new Html5Qrcode("reader");
             let scanning = false;
 
+            function getRandomString(length) {
+                const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                let result = '';
+                for (let i = 0; i < length; i++) {
+                    result += characters.charAt(Math.floor(Math.random() * characters.length));
+                }
+                return result;
+            }
+
             document.getElementById("start-button").addEventListener("click", () => {
                 document.getElementById("start-button").setAttribute('disabled', 'true');
 
@@ -122,7 +131,26 @@
                             const url = new URL(decodedText);
                             const kd_toko = url.searchParams.get('kd_toko');
                             const encrypted = btoa(kd_toko);
-                            const redirectUrl = `/dks-scan/${encrypted}`;
+                            const katalog = url.searchParams.get('Katalog');
+
+                            // let katalogEncrypted = '';
+
+                            function generateRandomString(length) {
+                                const characters =
+                                    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                                let result = '';
+                                for (let i = 0; i < length; i++) {
+                                    const randomIndex = Math.floor(Math.random() * characters.length);
+                                    result += characters[randomIndex];
+                                }
+                                return result;
+                            }
+
+                            let randomString = generateRandomString(20);
+
+                            const katalogEncrypted = randomString.slice(0, 6) + katalog + randomString.slice(6);  
+
+                            const redirectUrl = `/dks-scan/${encrypted}?katalog=${katalogEncrypted}`;
                             document.getElementById("loading").classList.remove('d-none');
                             document.getElementById("stop-button").classList.add('d-none');
 
@@ -138,7 +166,7 @@
                                         $('#tqModal').modal('hide');
 
                                         window.location.href =
-                                            `/dks-scan/${btoa(selectedOption)}`;
+                                            `/dks-scan/${btoa(selectedOption)}?katalog=${katalogEncrypted}`;
                                     };
                                 } else {
                                     window.location.href = redirectUrl;
@@ -148,8 +176,8 @@
 
                         html5QrCode.start({
                             facingMode: {
-                                exact: "environment"
-                                // exact: "user"
+                                // exact: "environment"
+                                exact: "user"
                             }
                         }, config, qrCodeSuccessCallback).then(() => {
                             scanning = true;

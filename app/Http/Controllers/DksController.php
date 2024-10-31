@@ -19,7 +19,7 @@ class DksController extends Controller
         }
     }
 
-    public function index($kd_toko = null)
+    public function index(Request $request, $kd_toko = null)
     {
         $this->guard();
 
@@ -36,8 +36,10 @@ class DksController extends Controller
                 ->where('kd_toko', $kd_toko)
                 ->first();
 
+            $katalog = $request->get('katalog');
+
             if ($toko) {
-                return view('dks.submit', compact('toko'));
+                return view('dks.submit', compact('toko', 'katalog'));
             } else {
                 return redirect()->route('dks.scan')->with('error', "Toko dengan kode $kd_toko tidak ditemukan.");
             }
@@ -80,6 +82,7 @@ class DksController extends Controller
         $check = DB::table('trns_dks')
             ->where('kd_toko', $kd_toko)
             ->where('user_sales', $user)
+            ->where('type', '!=', 'katalog')
             ->whereDate('tgl_kunjungan', '=', now()->toDateString())
             ->count();
 
@@ -93,6 +96,7 @@ class DksController extends Controller
             $type = 'out';
         }
 
+        // VALIDASI TOKO AKTIF
         $provinsiToko = DB::table('master_toko')
             ->select(['*'])
             ->where('kd_toko', $kd_toko)
@@ -109,27 +113,9 @@ class DksController extends Controller
             $waktu_kunjungan = now();
         }
 
-        // Ambil semua cek in aktif untuk user pada hari ini
-        // $cekInAktif = DB::table('trns_dks as in_data')
-        //     ->select(['in_data.kd_toko'])
-        //     ->where('in_data.user_sales', $user)
-        //     ->where('in_data.type', 'in')
-        //     ->whereDate('in_data.tgl_kunjungan', '=', now()->toDateString())
-        //     ->leftJoin('trns_dks as out_data', function ($join) {
-        //         $join->on('in_data.user_sales', '=', 'out_data.user_sales')
-        //             ->whereColumn('out_data.kd_toko', 'in_data.kd_toko')
-        //             ->where('out_data.type', '=', 'out')
-        //             ->where('out_data.created_at', '>', 'in_data.created_at'); 
-        //     })
-        //     ->whereNull('out_data.id') 
-        //     ->pluck('in_data.kd_toko');
-
-        // // Jika yang di cek out adalah toko lain
-        // if ($kd_toko != $cekInAktif->last()) {
-        //     return redirect()->back()->with('error', 'Tidak dapat melakukan check out di toko sebelumnya!');
-        // }
-
-        if ($latitude && $longitude) {
+        // JIKA ADA PARAMETER KATALOG
+        $katalog = $request->get('katalog');
+        if ($katalog[6] == 'Y') {
             DB::table('trns_dks')
                 ->insert(
                     [
@@ -137,19 +123,42 @@ class DksController extends Controller
                         'user_sales'        => $user,
                         'kd_toko'           => $kd_toko,
                         'waktu_kunjungan'   => $waktu_kunjungan,
-                        'type'              => $type,
+                        'type'              => 'katalog',
                         'latitude'          => $latitude,
                         'longitude'         => $longitude,
                         'keterangan'        => $keterangan,
                         'created_by'        => $user,
                         'created_at'        => now(),
                         'updated_at'        => now(),
+                        'katalog'           => 'Y',
+                        'katalog_at'        => now()
                     ]
                 );
 
-            return redirect()->route('dks.scan')->with('success', "Berhasil melakukan check $type");
+            return redirect()->route('dks.scan')->with('success', "Berhasil scan katalog");
         } else {
-            return redirect()->back()->with('error', 'Lokasi tidak ditemukan!');
+            if ($latitude && $longitude) {
+                DB::table('trns_dks')
+                    ->insert(
+                        [
+                            'tgl_kunjungan'     => now(),
+                            'user_sales'        => $user,
+                            'kd_toko'           => $kd_toko,
+                            'waktu_kunjungan'   => $waktu_kunjungan,
+                            'type'              => $type,
+                            'latitude'          => $latitude,
+                            'longitude'         => $longitude,
+                            'keterangan'        => $keterangan,
+                            'created_by'        => $user,
+                            'created_at'        => now(),
+                            'updated_at'        => now(),
+                        ]
+                    );
+
+                return redirect()->route('dks.scan')->with('success', "Berhasil melakukan check $type");
+            } else {
+                return redirect()->back()->with('error', 'Lokasi tidak ditemukan!');
+            }
         }
     }
 }

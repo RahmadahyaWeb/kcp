@@ -95,6 +95,7 @@
                             <th>Kode Toko</th>
                             <th>Toko</th>
                             <th>Check In</th>
+                            <th>Katalog</th>
                             <th>Check Out</th>
                             <th>Lama Kunjungan</th>
                             <th>Keterangan</th>
@@ -103,7 +104,7 @@
                     <tbody>
                         @if ($items->isEmpty())
                             <tr>
-                                <td colspan="8" class="text-center">No data</td>
+                                <td colspan="9" class="text-center">No data</td>
                             </tr>
                         @else
                             @foreach ($items as $item)
@@ -118,7 +119,13 @@
                                     <td>{{ $item->kd_toko }}</td>
                                     <td>{{ $item->nama_toko }}</td>
                                     <td>{{ date('H:i:s', strtotime($item->waktu_cek_in)) }}</td>
-
+                                    <td>
+                                        @if ($item->katalog_at)
+                                            {{ date('H:i:s', strtotime($item->katalog_at)) }}
+                                        @else
+                                            Belum scan katalog
+                                        @endif
+                                    </td>
                                     @if (in_array($item->kd_toko, $tokoAbsen))
                                         <td> {{ date('H:i:s', strtotime($item->waktu_cek_out)) }}</td>
                                         <td>-</td>
@@ -150,7 +157,7 @@
         <div class="card-footer">
             <div wire:loading.class="d-none">
                 {{ $items->links() }}
-            </div>  
+            </div>
         </div>
     </div>
 </div>

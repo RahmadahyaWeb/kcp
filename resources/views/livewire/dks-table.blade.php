@@ -14,13 +14,14 @@
 
 <div>
     <div class="table-responsive">
-        <table class="table table-hover table-bordered table-sm">
+        <table class="table table-hover table-sm">
             <thead>
                 <tr>
                     <th>Nama</th>
                     <th>Tgl. Kunjungan</th>
                     <th>Toko</th>
                     <th>Check In</th>
+                    <th>Katalog</th>
                     <th>Check Out</th>
                     <th>Lama Kunjungan</th>
                     <th>Keterangan</th>
@@ -29,7 +30,7 @@
             <tbody>
                 @if ($items->isEmpty())
                     <tr>
-                        <td colspan="7" class="text-center">No data</td>
+                        <td colspan="8" class="text-center">No data</td>
                     </tr>
                 @else
                     @foreach ($items as $item)
@@ -42,6 +43,13 @@
                             <td>{{ $formattedDate }}</td>
                             <td>{{ $item->nama_toko }}</td>
                             <td>{{ date('H:i:s', strtotime($item->waktu_cek_in)) }}</td>
+                            <td>
+                                @if ($item->katalog_at)
+                                    {{ date('H:i:s', strtotime($item->katalog_at)) }}
+                                @else
+                                    Belum scan katalog
+                                @endif
+                            </td>
                             @if (in_array($item->kd_toko, $tokoAbsen))
                                 <td>
                                     @if ($item->waktu_cek_out)
