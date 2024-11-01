@@ -20,7 +20,7 @@
         </div>
         <div class="card-body">
             <div class="mb-3">
-                <b> {{ $today = \Carbon\Carbon::now()->format('d-m-Y') }}</b>
+                <b> {{ $today = \Carbon\Carbon::now()->format('d-m-Y') }}</b> | Jangan lupa scan katalog.
             </div>
             @livewire('dks-table')
         </div>
