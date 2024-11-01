@@ -109,7 +109,7 @@ class DksController extends Controller
         $checkKatalog = DB::table('trns_dks')
             ->where('kd_toko', $kd_toko)
             ->where('user_sales', $user)
-            ->where('type', '==', 'katalog')
+            ->where('type', '=', 'katalog')
             ->whereDate('tgl_kunjungan', '=', now()->toDateString())
             ->count();
 
