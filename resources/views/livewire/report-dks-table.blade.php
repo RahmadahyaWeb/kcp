@@ -86,7 +86,7 @@
                 </div>
             </div>
 
-            <div wire:loading.class="d-none" class="table-responsive">
+            <div wire:loading.class="d-none" wire:target="toDate, user_sales, kd_toko, gotoPage" class="table-responsive">
                 <table class="table table-hover table-sm">
                     <thead>
                         <tr>
@@ -161,7 +161,7 @@
             </div>
         </div>
         <div class="card-footer">
-            <div wire:loading.class="d-none">
+            <div wire:loading.class="d-none" wire:target="toDate, user_sales, kd_toko, gotoPage">
                 {{ $items->links() }}
             </div>
         </div>
