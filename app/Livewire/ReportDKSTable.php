@@ -70,7 +70,7 @@ class ReportDksTable extends Component
             })
             ->whereDate('in_data.tgl_kunjungan', '>', '2024-10-31') // Add this line
             ->orderBy('in_data.created_at', 'desc')
-            ->paginate(15);
+            ->paginate(20);
 
         $sales = DB::table('users')
             ->select(['*'])
