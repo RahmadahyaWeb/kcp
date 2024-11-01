@@ -113,8 +113,6 @@ class DksController extends Controller
             ->whereDate('tgl_kunjungan', '=', now()->toDateString())
             ->count();
 
-        dd($checkKatalog);
-
         if ($checkKatalog > 0) {
             return redirect()->back()->with('error', 'Anda sudah melakukan scan katalog!');
         }
