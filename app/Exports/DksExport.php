@@ -3,7 +3,6 @@
 namespace App\Exports;
 
 use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
 class DksExport implements WithMultipleSheets
@@ -30,6 +29,8 @@ class DksExport implements WithMultipleSheets
         }
 
         $sheets[] = new KunjunganSheet($sales, $this->fromDate, $this->toDate);
+
+        $sheets[] = new RekapSheet($sales, $this->fromDate, $this->toDate);
 
         return $sheets;
     }
