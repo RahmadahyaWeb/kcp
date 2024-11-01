@@ -105,6 +105,18 @@ class DksController extends Controller
             $type = 'out';
         }
 
+        // VALIDASI KATALOG
+        $checkKatalog = DB::table('trns_dks')
+            ->where('kd_toko', $kd_toko)
+            ->where('user_sales', $user)
+            ->where('type', '==', 'katalog')
+            ->whereDate('tgl_kunjungan', '=', now()->toDateString())
+            ->count();
+
+        if ($checkKatalog > 0) {
+            return redirect()->back()->with('error', 'Anda sudah melakukan scan katalog!');
+        }
+
         // VALIDASI TOKO AKTIF
         $provinsiToko = DB::table('master_toko')
             ->select(['*'])
