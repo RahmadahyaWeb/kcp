@@ -94,6 +94,10 @@ class DksController extends Controller
                 return redirect()->back()->with('error', 'Tidak dapat scan katalog. Anda belum melakukan check in!');
             }
         } else if ($check == 2) {
+            if ($katalog[6] == 'Y') {
+                return redirect()->back()->with('error', 'Tidak dapat scan katalog. Anda sudah melakukan check out!');
+            }
+
             return redirect()->back()->with('error', 'Anda sudah melakukan check out!');
         } else if ($keterangan == 'ist') {
             $type = 'out';
