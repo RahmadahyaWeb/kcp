@@ -28,6 +28,9 @@ class RekapSheet implements WithTitle, WithEvents, WithColumnFormatting
                 $this->setHeader($sheet);
                 $this->populateData($sheet);
                 $this->autoSizeColumns($sheet);
+
+                // FREEZE PANE
+                $event->sheet->getDelegate()->freezePane('D1');
             }
         ];
     }
@@ -41,6 +44,7 @@ class RekapSheet implements WithTitle, WithEvents, WithColumnFormatting
         $sheet->setCellValue('B1', 'Pelanggaran');
         $sheet->setCellValue('C1', 'Punishment');
 
+        // ALUR PENGGUNAAN DKS
         $sheet->mergeCells('A8:A9');
 
         $sheet->setCellValue('A3', 'Setiap masuk toko harus check in');
@@ -50,6 +54,28 @@ class RekapSheet implements WithTitle, WithEvents, WithColumnFormatting
         $sheet->setCellValue('A7', 'Durasi lama berkunjung di toko minimal 30 menit');
         $sheet->setCellValue('A8', 'Lama istirahat 1 jam 15 menit (selain hari jumat) harus memberikan "IST" di system');
         $sheet->setCellValue('A10', 'Lama istirahat 1 jam 45 menit (khusus hari jumat) harus memberikan "IST" di system');
+
+        // PELANGGARAN
+        $sheet->mergeCells('B3:B4');
+
+        $sheet->setCellValue('B3', 'Lupa check in atau check out');
+        $sheet->setCellValue('B5', 'Check in pertama melebihi 09.30');
+        $sheet->setCellValue('B6', 'Durasi perjalanan dari toko ke toko berikutnya');
+        $sheet->setCellValue('B7', 'Lama berkunjung di toko tidak sampai 30 menit');
+        $sheet->setCellValue('B8', 'Istirahat melebihi 1 jam 15 menit (selain hari jumat)');
+        $sheet->setCellValue('B9', 'Istirahat melebihi 1 jam 45 menit (khusus hari jumat)');
+        $sheet->setCellValue('B10', 'Tidak memberikan keterangan saat mau istirahat');
+
+        // PUNISHMENT
+        $sheet->mergeCells('C3:C4');
+        $sheet->mergeCells('C8:C9');
+
+        $sheet->setCellValue('C3', 'Rp. 10.000 / kejadian');
+        $sheet->setCellValue('C5', 'Rp. 25.000 / kejadian');
+        $sheet->setCellValue('C6', 'Rp. 25.000 / kejadian');
+        $sheet->setCellValue('C7', 'Rp. 15.000 / kejadian');
+        $sheet->setCellValue('C8', 'Rp. 10.000 / kejadian');
+        $sheet->setCellValue('C10', 'Rp. 5.000 / kejadian');
 
         $styleArray = [
             'alignment' => [
@@ -66,7 +92,7 @@ class RekapSheet implements WithTitle, WithEvents, WithColumnFormatting
         ];
 
         $sheet->getDelegate()->getStyle('A1:C2')->applyFromArray($styleArray);
-        $sheet->getDelegate()->getStyle('A3:A11')->applyFromArray($styleArrayAlurPenggunaanDks);
+        $sheet->getDelegate()->getStyle('A3:C10')->applyFromArray($styleArrayAlurPenggunaanDks);
     }
 
     private function populateData($sheet)
@@ -74,10 +100,13 @@ class RekapSheet implements WithTitle, WithEvents, WithColumnFormatting
         $startColumn = 4;
         foreach ($this->sales as $user_sales) {
             $user_sales_upper = strtoupper($user_sales);
+            
             $this->setSalesHeaders($sheet, $startColumn, $user_sales_upper);
+            $this->fillData($sheet, $startColumn, $user_sales);
             $startColumn += 3;
         }
     }
+
 
     private function setSalesHeaders($sheet, $startColumn, $user_sales)
     {
@@ -102,6 +131,8 @@ class RekapSheet implements WithTitle, WithEvents, WithColumnFormatting
             ->getFont()
             ->setBold(true);
     }
+
+    private function fillData($sheet, $startColumn, $user_sales) {}
 
     private function autoSizeColumns($sheet)
     {

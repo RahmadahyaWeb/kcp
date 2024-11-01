@@ -180,7 +180,7 @@ class KunjunganSheet implements WithTitle, WithEvents, WithColumnFormatting
                 ->first();
 
             if ($cekInPertama == '00:00:00') {
-                $punishmentLupaCekInOut = 0;
+                $punishmentLupaCekInOut = 1;
             } else if ($cekOut == null) {
                 $punishmentLupaCekInOut = 1;
             }
