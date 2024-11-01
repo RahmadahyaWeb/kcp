@@ -127,7 +127,11 @@
                                         @endif
                                     </td>
                                     @if (in_array($item->kd_toko, $tokoAbsen))
-                                        <td> {{ date('H:i:s', strtotime($item->waktu_cek_out)) }}</td>
+                                        @if ($item->waktu_cek_out)
+                                            {{ date('H:i:s', strtotime($item->waktu_cek_out)) }}
+                                        @else
+                                            Belum check out
+                                        @endif
                                         <td>-</td>
                                         <td>Absen Toko</td>
                                     @else
