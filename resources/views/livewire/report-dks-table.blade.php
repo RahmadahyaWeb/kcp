@@ -128,7 +128,9 @@
                                     </td>
                                     @if (in_array($item->kd_toko, $tokoAbsen))
                                         @if ($item->waktu_cek_out)
-                                            {{ date('H:i:s', strtotime($item->waktu_cek_out)) }}
+                                            <td>
+                                                {{ date('H:i:s', strtotime($item->waktu_cek_out)) }}
+                                            </td>
                                         @else
                                             Belum check out
                                         @endif
