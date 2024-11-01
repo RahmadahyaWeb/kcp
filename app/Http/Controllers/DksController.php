@@ -103,10 +103,6 @@ class DksController extends Controller
             }
         } else {
             $type = 'out';
-
-            if ($katalog[6] == 'Y') {
-                return redirect()->back()->with('error', 'Anda sudah melakukan scan katalog!');
-            }
         }
 
         // VALIDASI TOKO AKTIF
