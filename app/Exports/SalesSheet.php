@@ -104,9 +104,9 @@ class SalesSheet implements FromCollection, WithHeadings, WithCustomStartCell, W
                 $footerRow = $lastRow + 1;
                 $footerRow2 = $lastRow + 2;
 
-                $sheet->setCellValue("A{$footerRow}", "Banyak Punishment");
-                $sheet->setCellValue("I{$footerRow}", "=COUNTA(I3:I{$lastRow})");
-                $sheet->setCellValue("K{$footerRow}", "=COUNTA(K3:K{$lastRow})");
+                // $sheet->setCellValue("A{$footerRow}", "Banyak Punishment");
+                // $sheet->setCellValue("I{$footerRow}", "=COUNTA(I3:I{$lastRow})");
+                // $sheet->setCellValue("K{$footerRow}", "=COUNTA(K3:K{$lastRow})");
 
                 $sheet->getStyle("A{$footerRow}")->applyFromArray([
                     'alignment' => [

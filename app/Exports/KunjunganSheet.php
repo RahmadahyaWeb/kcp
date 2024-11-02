@@ -141,48 +141,65 @@ class KunjunganSheet implements WithTitle, WithEvents, WithColumnFormatting
             $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn);
             $sheet->setCellValue($columnLetter . $rowNumber, str_replace('{row}', $rowNumber, $totalKunjungan));
 
-            // CEK IN PERTAMA
-            $cekInPertama = DB::table('trns_dks')
-                ->select(['*'])
-                ->where('user_sales', $user_sales)
-                ->where('tgl_kunjungan', $date)
-                ->where('type', 'in')
-                ->orderBy('waktu_kunjungan', 'asc')
-                ->first();
+            // PENGECEKAN HARI MINGGU
+            $isSunday = \Carbon\Carbon::parse($date)->isSunday();
 
-            if ($cekInPertama == null) {
-                $cekInPertama = '00:00:00';
+            if ($isSunday) {
+                $punishmentLupaCekInOut = 0;
             } else {
-                $cekInPertama = \Carbon\Carbon::parse($cekInPertama->waktu_kunjungan)->format('H:i:s');
-            }
+                $tokoAbsen = [
+                    '6B',
+                    '6C',
+                    '6D',
+                    '6F',
+                    '6H',
+                    'TX'
+                ];
 
-            $nextColumnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn + 1);
-            $sheet->setCellValue($nextColumnLetter . $rowNumber, str_replace('{row}', $rowNumber, $cekInPertama));
+                // CEK IN PERTAMA
+                $cekInPertama = DB::table('trns_dks')
+                    ->select(['*'])
+                    ->where('user_sales', $user_sales)
+                    ->where('tgl_kunjungan', $date)
+                    ->where('type', 'in')
+                    ->whereNotIn('kd_toko', $tokoAbsen)
+                    ->orderBy('waktu_kunjungan', 'asc')
+                    ->first();
 
-            // PUNISHMENT > 9.30
-            if ($cekInPertama > '09:30:00') {
-                $punishmentCekInPertama = 1;
-            } else {
-                $punishmentCekInPertama = 0;
-            }
+                if ($cekInPertama == null) {
+                    $cekInPertama = '00:00:00';
+                } else {
+                    $cekInPertama = \Carbon\Carbon::parse($cekInPertama->waktu_kunjungan)->format('H:i:s');
+                }
 
-            $nextColumnLetter2 = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn + 2);
-            $sheet->setCellValue($nextColumnLetter2 . $rowNumber, str_replace('{row}', $rowNumber, $punishmentCekInPertama));
+                $nextColumnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn + 1);
+                $sheet->setCellValue($nextColumnLetter . $rowNumber, str_replace('{row}', $rowNumber, $cekInPertama));
 
-            // PUNISHMENT LUPA CEK IN / CEK OUT
-            $punishmentLupaCekInOut = 0;
-            $cekOut = DB::table('trns_dks')
-                ->select(['*'])
-                ->where('user_sales', $user_sales)
-                ->where('tgl_kunjungan', $date)
-                ->where('type', 'out')
-                ->orderBy('waktu_kunjungan', 'asc')
-                ->first();
+                // PUNISHMENT > 9.30
+                if ($cekInPertama > '09:30:00') {
+                    $punishmentCekInPertama = 1;
+                } else {
+                    $punishmentCekInPertama = 0;
+                }
 
-            if ($cekInPertama == '00:00:00') {
-                $punishmentLupaCekInOut = 1;
-            } else if ($cekOut == null) {
-                $punishmentLupaCekInOut = 1;
+                $nextColumnLetter2 = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn + 2);
+                $sheet->setCellValue($nextColumnLetter2 . $rowNumber, str_replace('{row}', $rowNumber, $punishmentCekInPertama));
+
+                // PUNISHMENT LUPA CEK IN / CEK OUT
+                $punishmentLupaCekInOut = 0;
+                $cekOut = DB::table('trns_dks')
+                    ->select(['*'])
+                    ->where('user_sales', $user_sales)
+                    ->where('tgl_kunjungan', $date)
+                    ->where('type', 'out')
+                    ->orderBy('waktu_kunjungan', 'asc')
+                    ->first();
+
+                if ($cekInPertama == '00:00:00') {
+                    $punishmentLupaCekInOut = 1;
+                } else if ($cekOut == null) {
+                    $punishmentLupaCekInOut = 1;
+                }
             }
 
             $nextColumnLetter3 = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn + 3);

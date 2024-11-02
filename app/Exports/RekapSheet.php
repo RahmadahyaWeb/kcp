@@ -2,6 +2,8 @@
 
 namespace App\Exports;
 
+use DateTime;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithTitle;
@@ -26,7 +28,8 @@ class RekapSheet implements WithTitle, WithEvents, WithColumnFormatting
             AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet;
                 $this->setHeader($sheet);
-                $this->populateData($sheet);
+                $dates = $this->getDateRange();
+                $this->populateData($sheet, $dates);
                 $this->autoSizeColumns($sheet);
 
                 // FREEZE PANE
@@ -95,14 +98,14 @@ class RekapSheet implements WithTitle, WithEvents, WithColumnFormatting
         $sheet->getDelegate()->getStyle('A3:C10')->applyFromArray($styleArrayAlurPenggunaanDks);
     }
 
-    private function populateData($sheet)
+    private function populateData($sheet, $dates)
     {
         $startColumn = 4;
         foreach ($this->sales as $user_sales) {
             $user_sales_upper = strtoupper($user_sales);
-            
+
             $this->setSalesHeaders($sheet, $startColumn, $user_sales_upper);
-            $this->fillData($sheet, $startColumn, $user_sales);
+            $this->fillData($sheet, $dates, $startColumn, $user_sales);
             $startColumn += 3;
         }
     }
@@ -132,7 +135,89 @@ class RekapSheet implements WithTitle, WithEvents, WithColumnFormatting
             ->setBold(true);
     }
 
-    private function fillData($sheet, $startColumn, $user_sales) {}
+    private function fillData($sheet, $dates, $startColumn, $user_sales)
+    {
+        $punishmentLupaCekInOut = 0;
+        $punishmentCekInPertama = 0;
+        $punishmentLamaPerjalanan = 0;
+
+        foreach ($dates as $index => $date) {
+            // PENGECEKAN HARI MINGGU
+            $isSunday = \Carbon\Carbon::parse($date)->isSunday();
+
+            if (!$isSunday) {
+                $tokoAbsen = [
+                    '6B',
+                    '6C',
+                    '6D',
+                    '6F',
+                    '6H',
+                    'TX'
+                ];
+
+                // CEK IN PERTAMA
+                $cekInPertama = DB::table('trns_dks')
+                    ->select(['*'])
+                    ->where('user_sales', $user_sales)
+                    ->where('tgl_kunjungan', $date)
+                    ->where('type', 'in')
+                    ->whereNotIn('kd_toko', $tokoAbsen)
+                    ->orderBy('waktu_kunjungan', 'asc')
+                    ->first();
+
+                if ($cekInPertama == null) {
+                    $cekInPertama = '00:00:00';
+                } else {
+                    $cekInPertama = \Carbon\Carbon::parse($cekInPertama->waktu_kunjungan)->format('H:i:s');
+                }
+
+                // PUNISHMENT > 9.30
+                if ($cekInPertama > '09:30:00') {
+                    $punishmentCekInPertama += 1;
+                }
+
+                // PUNISHMENT LUPA CEK IN / CEK OUT
+                $cekOut = DB::table('trns_dks')
+                    ->select(['*'])
+                    ->where('user_sales', $user_sales)
+                    ->where('tgl_kunjungan', $date)
+                    ->where('type', 'out')
+                    ->orderBy('waktu_kunjungan', 'asc')
+                    ->first();
+
+                if ($cekInPertama == '00:00:00') {
+                    $punishmentLupaCekInOut += 1;
+                } else if ($cekOut == null) {
+                    $punishmentLupaCekInOut += 1;
+                }
+            }
+        }
+
+        $rowNumber = 3;
+
+        $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn);
+        $sheet->mergeCells($columnLetter . $rowNumber . ':' . $columnLetter . $rowNumber + 1);
+        $nextColumnLetter2 = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn + 1);
+        $sheet->mergeCells($nextColumnLetter2 . $rowNumber . ':' . $nextColumnLetter2 . $rowNumber + 1);
+        $nextColumnLetter3 = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startColumn + 2);
+        $sheet->mergeCells($nextColumnLetter3 . $rowNumber . ':' . $nextColumnLetter3 . $rowNumber + 1);
+
+        // BANYAK PUNISHMENT CEK IN CEK OUT
+        $sheet->setCellValue($columnLetter . $rowNumber, str_replace('{row}', $rowNumber, $punishmentLupaCekInOut));
+        // BAYAR PUNISHMENT CEK IN CEK OUT
+        $sheet->setCellValue($nextColumnLetter3 . $rowNumber, str_replace('{row}', $rowNumber, 10000 * $punishmentLupaCekInOut));
+
+        // BANYAK PUNISHMENT CEK IN PERTAMA
+        $sheet->setCellValue($columnLetter . ($rowNumber + 2), str_replace('{row}', ($rowNumber + 2), $punishmentCekInPertama));
+        // BAYAR PUNISHMENT CEK IN PERTAMA
+        $sheet->setCellValue($nextColumnLetter3 . ($rowNumber + 2), str_replace('{row}', ($rowNumber) + 2, 25000 * $punishmentCekInPertama));
+
+        
+        // BANYAK PUNISHMENT DURASI LAMA PERJALANAN TOKO
+        $sheet->setCellValue($columnLetter . ($rowNumber + 3), str_replace('{row}', ($rowNumber + 2), "=SUM({$user_sales}!K3:K6898)"));
+        // BAYAR PUNISHMENT DURASI LAMA PERJALANAN TOKO
+        $sheet->setCellValue($nextColumnLetter3 . ($rowNumber + 3), str_replace('{row}', ($rowNumber + 2), "=SUM({$user_sales}!K3:K6898) * 25000"));
+    }
 
     private function autoSizeColumns($sheet)
     {
@@ -143,6 +228,21 @@ class RekapSheet implements WithTitle, WithEvents, WithColumnFormatting
             $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex);
             $sheet->getColumnDimension($columnLetter)->setAutoSize(true);
         }
+    }
+
+
+    private function getDateRange()
+    {
+        $dateBeginLoop = new DateTime($this->fromDate);
+        $dateEndLoop = new DateTime($this->toDate);
+        $dates = [];
+
+        while ($dateBeginLoop <= $dateEndLoop) {
+            $dates[] = $dateBeginLoop->format('Y-m-d');
+            $dateBeginLoop->modify('+1 day');
+        }
+
+        return $dates;
     }
 
     public function title(): string
